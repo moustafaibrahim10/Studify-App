@@ -84,7 +84,6 @@ fun ProfilePic(navController: NavHostController){
             }
         }
 
-
         Spacer(modifier = Modifier.height(10.dp))
 
         Image(
@@ -103,7 +102,6 @@ fun ProfilePic(navController: NavHostController){
         )
 
         Spacer(modifier = Modifier.height(10.dp))
-
 
         Text(
             text = "Student",
@@ -150,11 +148,7 @@ fun ProfilePic(navController: NavHostController){
             )
 
         }
-
-
-
     }
-
 }
 @Composable
 fun GoalItem(icon: Int, title: String, description: String, progress: Float) {

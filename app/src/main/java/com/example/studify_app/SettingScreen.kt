@@ -31,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -180,6 +181,10 @@ fun ToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+
+    val activeColor = Color(0xFF4D9987)
+    val inactiveColor = Color(0xFFDCEEEA)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -200,7 +205,18 @@ fun ToggleRow(
                 color = Color(0xFF4D9987)
             )
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+            checkedThumbColor = Color.White,
+            checkedTrackColor = activeColor,
+            checkedBorderColor = Color.Transparent,
+
+            uncheckedThumbColor = Color.White,
+            uncheckedTrackColor = inactiveColor,
+            uncheckedBorderColor = Color.Transparent)
+        )
     }
 }
 

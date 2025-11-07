@@ -48,6 +48,12 @@ fun EditScr(navController: NavController) {
 
     val scrollState = rememberScrollState()
 
+    val Nameinputvalue = remember { mutableStateOf(TextFieldValue()) }
+    val Usnameinputvalue = remember { mutableStateOf(TextFieldValue()) }
+    val Emailinputvalue = remember { mutableStateOf(TextFieldValue()) }
+    val Bioinputvalue = remember { mutableStateOf(TextFieldValue()) }
+    val Majorinputvalue = remember { mutableStateOf(TextFieldValue()) }
+
     Column (
         modifier = Modifier.fillMaxWidth().padding(top = 40.dp)
         ,horizontalAlignment = Alignment.CenterHorizontally
@@ -104,29 +110,17 @@ fun EditScr(navController: NavController) {
             color = Color(0xFF4D9987)
         )
 
-
         Spacer(modifier = Modifier.height(15.dp))
-
-
-        val Nameinputvalue = remember { mutableStateOf(TextFieldValue()) }
-        val Usnameinputvalue = remember { mutableStateOf(TextFieldValue()) }
-        val Emailinputvalue = remember { mutableStateOf(TextFieldValue()) }
-        val Bioinputvalue = remember { mutableStateOf(TextFieldValue()) }
-        val Majorinputvalue = remember { mutableStateOf(TextFieldValue()) }
-
 
         Column(
             horizontalAlignment = Alignment.Start
         ) {
-
             Text(
                 text = "Name",
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 24.dp )
                 )
-
-
             TextField(
                 value = Nameinputvalue.value,
                 onValueChange = { Nameinputvalue.value = it },
@@ -152,8 +146,6 @@ fun EditScr(navController: NavController) {
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 24.dp )
             )
-
-
             TextField(
                 value = Usnameinputvalue.value,
                 onValueChange = { Usnameinputvalue.value = it },
@@ -173,15 +165,12 @@ fun EditScr(navController: NavController) {
 
             Spacer(modifier = Modifier.height(5.dp))
 
-
             Text(
                 text = "Email",
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 24.dp )
             )
-
-
             TextField(
                 value = Emailinputvalue.value,
                 onValueChange = { Emailinputvalue.value = it },
@@ -201,15 +190,12 @@ fun EditScr(navController: NavController) {
 
             Spacer(modifier = Modifier.height(5.dp))
 
-
             Text(
                 text = "Bio",
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 24.dp )
             )
-
-
             TextField(
                 value = Bioinputvalue.value,
                 onValueChange = { Bioinputvalue.value = it },
@@ -235,8 +221,6 @@ fun EditScr(navController: NavController) {
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 24.dp )
             )
-
-
             TextField(
                 value = Majorinputvalue.value,
                 onValueChange = { Majorinputvalue.value = it },
@@ -274,18 +258,10 @@ fun EditScr(navController: NavController) {
                     color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
                 )
+
             }
-
-
-
-
-
-
         }
-
     }
-
-
 }
 
 
