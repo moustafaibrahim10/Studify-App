@@ -1,4 +1,4 @@
-package com.example.studify.screens.auth
+package com.example.studify_app.screens.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

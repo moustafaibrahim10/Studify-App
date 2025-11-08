@@ -1,4 +1,4 @@
-package com.example.studify.navigation
+package com.example.studify_app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studify_app.screens.auth.ForgotPasswordScreen
 import com.example.studify_app.screens.auth.LoginScreen
-import com.example.studify.screens.auth.RegisterScreen
-import com.example.studify.screens.home.HomeScreen
+import com.example.studify_app.screens.auth.RegisterScreen
+import com.example.studify_app.screens.home.HomeScreen
 import com.example.studify_app.screens.onboarding.WelcomeScreen
 import com.example.studify_app.screens.onboarding.introTasks
 import com.example.studify_app.screens.onboarding.introPomodoro
