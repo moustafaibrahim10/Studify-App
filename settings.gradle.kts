@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Studify-App"
+rootProject.name = "ComposeTest"
 include(":app")
  
