@@ -54,7 +54,7 @@ fun ForgotPasswordScreen(
                 errorMessage = "Please enter your email"
                 false
             }
-            !isValidEmail(email) -> { // هنا هتشتغل عادي
+            !isValidEmail(email) -> {
                 errorMessage = "Please enter a valid email address"
                 false
             }
@@ -69,7 +69,7 @@ fun ForgotPasswordScreen(
     fun performResetPassword() {
         if (validateInput()) {
             isLoading = true
-            // Simulate API call
+            errorMessage = null
             successMessage = "Reset link sent to your email"
             isLoading = false
             onResetPasswordClick(email)
