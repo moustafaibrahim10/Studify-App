@@ -24,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
 
         <activity
             android:name=".AddSession"
@@ -42,6 +43,11 @@
             android:exported="true"
             android:theme="@style/Theme.StudifyApp" />
 
+=======
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+>>>>>>> zanaty
     </application>
 
 </manifest>
