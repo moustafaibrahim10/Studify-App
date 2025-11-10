@@ -108,7 +108,7 @@ fun GreetingSection() {
             painter = painterResource(id = R.drawable.owl_home),
             contentDescription = "Owl",
             modifier = Modifier
-                .size(140.dp)
+                .size(240.dp)
                 .padding(8.dp),
             contentScale = ContentScale.Fit
         )
@@ -341,7 +341,7 @@ fun ProgressSection() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // الرسم البياني
+            // Graph
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
@@ -350,7 +350,7 @@ fun ProgressSection() {
                     .height(80.dp)
             ) {
                 val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                val heights = listOf(60, 70, 65, 50, 55, 60, 40) // ارتفاع الأعمدة
+                val heights = listOf(60, 70, 65, 50, 55, 60, 40)
 
                 days.forEachIndexed { index, day ->
                     Column(
