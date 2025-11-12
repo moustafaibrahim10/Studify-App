@@ -52,13 +52,17 @@ fun MainScreen(navController: NavHostController) {
             composable("subjects") { /* TODO: SubjectsScreen(navController) */ }
             composable("calendar") { /* TODO: CalendarScreen(navController) */ }
             composable("pomodoro") { PomodoroScreen(navController) }
-            composable("profile") { /* TODO: ProfileScreen(navController) */ }
+            composable("profile") { ProfilePic(navController) }
 
             // شاشات فرعية (من غير ناف بار)
             composable("Counter") { CounterScreen(navController) }
             composable("sessionComplete") { CompleteSessionScreen(navController) }
             composable("addSession") { AddSessionScreen(navController) }
             composable("addFlashCard") { /* TODO: AddFlashCardScreen(navController) */ }
+
+            composable("settings") { SettingsScr(navController) }
+            composable("edit") { EditScr(navController) }
         }
     }
+
 }

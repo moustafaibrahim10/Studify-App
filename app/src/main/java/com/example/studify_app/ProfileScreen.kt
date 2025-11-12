@@ -43,7 +43,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun ProfilePic(navController: NavHostController){
     Column (
-        modifier = Modifier.fillMaxWidth().padding(top = 40.dp).background(Color.White)
+        modifier = Modifier.fillMaxWidth().background(Color.White)
         ,horizontalAlignment = Alignment.CenterHorizontally
     ){
         Box(
