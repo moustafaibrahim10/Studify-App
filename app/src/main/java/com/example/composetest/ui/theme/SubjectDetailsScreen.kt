@@ -48,7 +48,9 @@ fun SubjectDetailsScreen(
     onBack: () -> Unit,
     onOpenDeck: (DeckUi) -> Unit = {},
     onStartPomodoro: () -> Unit = {},
-    onTaskClick: (TaskUi) -> Unit = {}
+    onTaskClick: (TaskUi) -> Unit = {} ,
+    onflashcardsclick: () -> Unit = {}
+
 ) {
     var progress by remember { mutableStateOf(initialProgress.coerceIn(0, 100)) }
     val tasks = remember { mutableStateListOf<TaskUi>().also { it.addAll(initialTasks) } }
@@ -135,9 +137,11 @@ fun SubjectDetailsScreen(
 
             item {
                 Row(
+
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 2.dp),
+                        .padding(top = 2.dp)
+                        .clickable(onClick=onflashcardsclick),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

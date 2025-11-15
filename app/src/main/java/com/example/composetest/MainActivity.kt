@@ -14,6 +14,8 @@ import com.example.composetest.ui.theme.TaskUi
 import com.example.composetest.ui.theme.DeckUi
 import com.example.composetest.ui.theme.SubjectsScreen
 import com.example.composetest.ui.theme.SubjectUi
+import com.example.finalfinalefinal.decks_list
+import com.example.finalfinalefinal.routs
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,8 +66,12 @@ class MainActivity : ComponentActivity() {
                             initialDecks = decks,
                             onBack = { nav.popBackStack() },
                             onOpenDeck = { /* nav to deck if needed */ },
-                            onStartPomodoro = { /* TODO: open pomodoro */ }
+                            onStartPomodoro = { /* TODO: open pomodoro */ },
+                            onflashcardsclick = ({ nav.navigate(routs.deckList) })
                         )
+                    }
+                    composable(routs.deckList) {
+                        decks_list(navController = nav)
                     }
                 }
             }

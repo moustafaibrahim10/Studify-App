@@ -10,6 +10,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.composetest.R
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {
@@ -31,7 +32,7 @@ fun BottomNavBar(navController: NavHostController) {
             },
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_home),
+                   painter = painterResource(id = R.drawable.ic_home),
                     contentDescription = "Home",
                     tint = if (currentRoute == "home") selectedColor else activeColor,
                     modifier = Modifier.size(20.dp)
