@@ -1,50 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.StudifyApp">
+        android:theme="@style/Theme.ComposeTest">
+
+        <!-- شاشة البداية الوحيدة -->
         <activity
-            android:name=".DayDetailsScreen"
-            android:exported="false"
-            android:theme="@style/Theme.StudifyApp" />
-        <activity
-            android:name=".MainController"
-            android:exported="true"
-            android:theme="@style/Theme.StudifyApp">
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".AddSession"
-            android:exported="false"
-            android:theme="@style/Theme.StudifyApp" />
-        <activity
-            android:name=".SessionComplete"
-            android:exported="false"
-            android:theme="@style/Theme.StudifyApp" />
-        <activity
-            android:name=".Pomodoro"
-            android:exported="false"
-            android:theme="@style/Theme.StudifyApp" />
-        <activity
-            android:name=".Counter"
-            android:exported="true"
-            android:theme="@style/Theme.StudifyApp" />
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

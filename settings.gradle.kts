@@ -12,7 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-rootProject.name = "Studify-App"
+rootProject.name = "Studify-App"   // أو اسم مشروعك
 include(":app")
- 
