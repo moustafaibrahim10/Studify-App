@@ -2,6 +2,7 @@ package com.example.studify_app.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -19,10 +20,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.composetest.R
+import com.example.finalfinalefinal.routs
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF67C090), Color(0xFFE6F4EA))
     )
@@ -45,27 +49,27 @@ fun HomeScreen() {
         }
 
         item {
-            ActionButtonsSection()
+            ActionButtonsSection(navController)
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            GoalsCard()
+            GoalsCard(navController)
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            UpcomingTasksSection()
+            UpcomingTasksSection(navController)
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            FlashCardsSection()
+            FlashCardsSection(navController)
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            ProgressSection()
+            ProgressSection(navController)
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -132,14 +136,14 @@ fun GreetingSection() {
 }
 
 @Composable
-fun ActionButtonsSection() {
+fun ActionButtonsSection(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Button(
-            onClick = { /* Start Pomodoro */ },
+            onClick = { navController.navigate("pomodoro") },
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
@@ -163,7 +167,7 @@ fun ActionButtonsSection() {
 }
 
 @Composable
-fun GoalsCard() {
+fun GoalsCard(navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -209,7 +213,7 @@ fun GoalsCard() {
 }
 
 @Composable
-fun UpcomingTasksSection() {
+fun UpcomingTasksSection(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -275,10 +279,10 @@ fun TaskItem(title: String, due: String) {
 }
 
 @Composable
-fun FlashCardsSection() {
+fun FlashCardsSection(navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth().clickable { navController.navigate(routs.deckList) },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -308,10 +312,10 @@ fun FlashCardsSection() {
 }
 
 @Composable
-fun ProgressSection() {
+fun ProgressSection(navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth().clickable{navController.navigate("progress")},
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.finalfinalefinal.routs
 
 class SessionComplete : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,7 +130,7 @@ fun CompleteSessionScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { navController.navigate("addFlashCard") },
+                onClick = { navController.navigate(routs.deckList) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),

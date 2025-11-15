@@ -21,6 +21,8 @@ import androidx.compose.ui.geometry.Offset // مهم للرسم
 import androidx.compose.ui.graphics.Path // مهم لرسم المنحنى
 import androidx.compose.ui.graphics.drawscope.Stroke // مهم لرسم الخطوط
 import androidx.compose.ui.unit.Dp // مهم للرسم
+import androidx.navigation.NavController
+import com.example.finalfinalefinal.routs
 
 // الألوان والمقاييس المستخدمة في التصميم
 val PrimaryMint = Color(0xFF66BB6A)
@@ -28,7 +30,7 @@ val BackgroundPale = Color(0xFFF0FFF0) // لون خلفية خفيف جداً
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgressScreen() {
+fun ProgressScreen(navController: NavController) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +41,7 @@ fun ProgressScreen() {
                     Text("Progress", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back press */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "رجوع")
                     }
                 },
@@ -258,5 +260,5 @@ fun MasteryCurveGraph(data: List<Float>, modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewProgressScreen() {
-    ProgressScreen()
+    ProgressScreen(navController = androidx.navigation.compose.rememberNavController())
 }

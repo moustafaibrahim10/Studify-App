@@ -30,52 +30,52 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-//            MaterialTheme {
-//                val nav = rememberNavController()
-//                NavHost(navController = nav, startDestination = "subjects") {
-//
-//                    composable("subjects") {
-//                        SubjectsScreen(
-//                            subjects = subjects,
-//                            onSubjectClick = { s ->
-//                                nav.navigate("subject/${s.name}")
-//                            }
-//                        )
-//                    }
-//
-//                    composable(
-//                        route = "subject/{name}",
-//                        arguments = listOf(navArgument("name") { type = NavType.StringType })
-//                    ) { backStackEntry ->
-//                        val name = backStackEntry.arguments?.getString("name") ?: ""
-//                        val tasks = listOf(
-//                            TaskUi("Cell Structure", "Due: Apr 20"),
-//                            TaskUi("Photosynthesis", "Due: Apr 22"),
-//                            TaskUi("Genetics", "Due: Apr 25"),
-//                        )
-//                        val decks = listOf(
-//                            DeckUi("Chapter 3", 15),
-//                            DeckUi("Chapter 4", 20),
-//                            DeckUi("Chapter 5", 18),
-//                        )
-//                        val progress = subjects.find { it.name == name }?.progress ?: 0
-//
-//                        SubjectDetailsScreen(
-//                            subjectName = name,
-//                            initialProgress = progress,
-//                            initialTasks = tasks,
-//                            initialDecks = decks,
-//                            onBack = { nav.popBackStack() },
-//                            onOpenDeck = { /* nav to deck if needed */ },
-//                            onStartPomodoro = { /* TODO: open pomodoro */ },
-//                            onflashcardsclick = ({ nav.navigate(routs.deckList) })
-//                        )
-//                    }
-//                    composable(routs.deckList) {
-//                        decks_list(navController = nav)
-//                    }
-//                }
-//            }
+            MaterialTheme {
+                val nav = rememberNavController()
+                NavHost(navController = nav, startDestination = "subjects") {
+
+                    composable("subjects") {
+                        SubjectsScreen(
+                            subjects = subjects,
+                            onSubjectClick = { s ->
+                                nav.navigate("subject/${s.name}")
+                            }
+                        )
+                    }
+
+                    composable(
+                        route = "subject/{name}",
+                        arguments = listOf(navArgument("name") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val name = backStackEntry.arguments?.getString("name") ?: ""
+                        val tasks = listOf(
+                            TaskUi("Cell Structure", "Due: Apr 20"),
+                            TaskUi("Photosynthesis", "Due: Apr 22"),
+                            TaskUi("Genetics", "Due: Apr 25"),
+                        )
+                        val decks = listOf(
+                            DeckUi("Chapter 3", 15),
+                            DeckUi("Chapter 4", 20),
+                            DeckUi("Chapter 5", 18),
+                        )
+                        val progress = subjects.find { it.name == name }?.progress ?: 0
+
+                        SubjectDetailsScreen(
+                            subjectName = name,
+                            initialProgress = progress,
+                            initialTasks = tasks,
+                            initialDecks = decks,
+                            onBack = { nav.popBackStack() },
+                            onOpenDeck = { /* nav to deck if needed */ },
+                            onStartPomodoro = { /* TODO: open pomodoro */ },
+                            onflashcardsclick = ({ nav.navigate(routs.deckList) })
+                        )
+                    }
+                    composable(routs.deckList) {
+                        decks_list(navController = nav)
+                    }
+                }
+            }
             navigation()
         }
     }

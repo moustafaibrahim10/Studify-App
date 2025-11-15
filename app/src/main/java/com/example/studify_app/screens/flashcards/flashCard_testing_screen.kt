@@ -48,7 +48,7 @@ fun flashCard_testing_screen(
             TopAppBar(
                 title = { Text("", textAlign = TextAlign.Center) },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {navController.popBackStack()}) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
