@@ -6,4 +6,6 @@ object routs {
     var flashCardTesting= "flashCard_testing_screen"
     var flashcardsAnalytics= "flashcardsAnalytics"
 
+    var addFlashCard = "add_flashcard_screen"
+
 }

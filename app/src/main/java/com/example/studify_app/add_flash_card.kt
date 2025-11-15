@@ -13,7 +13,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,11 +26,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 val mintGreen = Color(0xFF66BB6A)
 
 @Composable
-fun AddFlashCard() {
+fun AddFlashCard(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -47,7 +47,7 @@ fun AddFlashCard() {
         FrontTextField()
         BackTextField()
         TagTextField()
-        Buttons()
+        Buttons( navController)
     }
 }
 
@@ -144,11 +144,11 @@ fun TagTextField() {
 }
 
 @Composable
-fun Buttons() {
+fun Buttons(navController: NavHostController) {
 
     Row() {
         Button(
-            onClick = {},
+            onClick = { navController.popBackStack() },
             modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
             shape = RoundedCornerShape(10),
             colors = ButtonDefaults.buttonColors(

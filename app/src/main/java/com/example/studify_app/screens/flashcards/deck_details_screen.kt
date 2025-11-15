@@ -45,22 +45,22 @@ fun deck_details_screen(
     navController: NavController,
     onstartreviewClick: () -> Unit={navController.navigate(routs.flashCardTesting)}
 ){
-    var isAddFlashcardDialogOpen by rememberSaveable { mutableStateOf(false) }
+//    var isAddFlashcardDialogOpen by rememberSaveable { mutableStateOf(false) }
     var frontSide by remember { mutableStateOf("") }
     var backSide by remember { mutableStateOf("") }
     var tag by remember { mutableStateOf("") }
 
-    addFlashcarDialog(
-        frontSide = frontSide,
-        onFrontSideChange = {frontSide=it},
-        backSide = backSide,
-        onBackSideChange = {backSide = it},
-        tag = tag,
-        onTagChange = {tag = it},
-        onDismiss = {isAddFlashcardDialogOpen=false},
-        onConfirm = {isAddFlashcardDialogOpen=false},
-        isOpen = isAddFlashcardDialogOpen
-    )
+//    addFlashcarDialog(
+//        frontSide = frontSide,
+//        onFrontSideChange = {frontSide=it},
+//        backSide = backSide,
+//        onBackSideChange = {backSide = it},
+//        tag = tag,
+//        onTagChange = {tag = it},
+//        onDismiss = {isAddFlashcardDialogOpen=false},
+//        onConfirm = {isAddFlashcardDialogOpen=false},
+//        isOpen = isAddFlashcardDialogOpen
+//    )
 
     Scaffold(
         topBar = {
@@ -80,7 +80,10 @@ fun deck_details_screen(
 
             ){
                 startreviewBtn(onstartreviewClick)
-                addflashcardBtn({isAddFlashcardDialogOpen=true})
+                addflashcardBtn {
+                    navController.navigate(routs.addFlashCard)
+                }
+
             }
         }
     ){

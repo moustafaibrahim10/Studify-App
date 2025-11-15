@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studify_app.AddFlashCard
 
 @Composable
 fun navigation() {
@@ -23,7 +24,11 @@ fun navigation() {
         composable(routs.flashcardsAnalytics) {
             flashcardsAnalytics(navController)
         }
-})
+        composable(routs.addFlashCard) {
+            AddFlashCard(navController)
+        }
+
+    })
 }
 
 
