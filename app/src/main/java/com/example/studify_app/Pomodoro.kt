@@ -18,13 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.composetest.R
 
 class Pomodoro : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +52,7 @@ fun PomodoroScreen(navController: NavController) {
         ) {
             Text(
                 text = "Pomodoro",
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center),
@@ -83,10 +85,15 @@ fun PomodoroScreen(navController: NavController) {
             )
         }
 
+        Spacer(modifier = Modifier.height(60.dp))
+
+
         Text(
             text = "Study Session",
             style = MaterialTheme.typography.titleLarge,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
             fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             textAlign = TextAlign.Center
         )
@@ -95,7 +102,8 @@ fun PomodoroScreen(navController: NavController) {
 
         Text(
             text = "Focus on your task for the next 25 minutes.",
-            style = TextStyle(fontSize = 18.sp),
+            style = TextStyle(fontSize = 16.sp),
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)),
             modifier = Modifier.align(Alignment.CenterHorizontally),
             textAlign = TextAlign.Center
         )
@@ -160,7 +168,7 @@ fun PomodoroScreen(navController: NavController) {
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090))
         ) {
-            Text("Add Session", color = Color.White)
+            Text("Add Session", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)), color = Color.White)
         }
     }
 }

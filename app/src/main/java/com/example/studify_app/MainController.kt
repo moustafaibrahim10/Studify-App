@@ -74,8 +74,10 @@ fun MainScreen(navController: NavHostController) {
             composable("tasks") {  com.example.composetest.ui.theme.SetSub() }
             composable("calendar") { /* TODO: CalendarScreen(navController) */ }
             composable("pomodoro") { PomodoroScreen(navController) }
-            composable("profile") { /* TODO: ProfileScreen(navController) */ }
+            composable("profile") { ProfilePic(navController) }
             composable("progress") { ProgressScreen(navController) }
+            composable("settings") { SettingsScr(navController) }
+            composable("edit") { EditScr(navController) }
 
             // شاشات فرعية (من غير ناف بار)
             composable("Counter") { CounterScreen(navController) }
