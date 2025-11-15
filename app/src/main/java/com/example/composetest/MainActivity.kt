@@ -14,7 +14,9 @@ import com.example.composetest.ui.theme.TaskUi
 import com.example.composetest.ui.theme.DeckUi
 import com.example.composetest.ui.theme.SubjectsScreen
 import com.example.composetest.ui.theme.SubjectUi
+import com.example.finalfinalefinal.deck_details_screen
 import com.example.finalfinalefinal.decks_list
+import com.example.finalfinalefinal.flashCard_testing_screen
 import com.example.finalfinalefinal.routs
 
 class MainActivity : ComponentActivity() {
@@ -72,6 +74,12 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(routs.deckList) {
                         decks_list(navController = nav)
+                    }
+                    composable(routs.deckDetails) {
+                        deck_details_screen(navController = nav)
+                    }
+                    composable(routs.flashCardTesting) {
+                        flashCard_testing_screen(navController = nav)
                     }
                 }
             }
