@@ -2,6 +2,7 @@ package com.example.studify_app.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -20,9 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composetest.R
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController
+) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF67C090), Color(0xFFE6F4EA))
     )
@@ -45,7 +50,13 @@ fun HomeScreen() {
         }
 
         item {
-            ActionButtonsSection()
+            ActionButtonsSection(
+                onPomodoroClick = {
+                    navController.navigate("pomodoro")
+            },
+                onAddTaskClick = {
+                    navController.navigate("addTask")
+                })
             Spacer(modifier = Modifier.height(20.dp))
         }
 
@@ -60,12 +71,18 @@ fun HomeScreen() {
         }
 
         item {
-            FlashCardsSection()
+            FlashCardsSection(onFlashcardsClick = {
+                navController.navigate("decksList")
+            })
             Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            ProgressSection()
+            ProgressSection(
+                onProgressClick = {
+                    navController.navigate("statistics")
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -132,14 +149,17 @@ fun GreetingSection() {
 }
 
 @Composable
-fun ActionButtonsSection() {
+fun ActionButtonsSection(
+    onPomodoroClick: () -> Unit = {},
+    onAddTaskClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Button(
-            onClick = { /* Start Pomodoro */ },
+            onClick = { onPomodoroClick() },
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
@@ -150,7 +170,7 @@ fun ActionButtonsSection() {
         }
 
         Button(
-            onClick = { /* Add Task */ },
+            onClick = { onAddTaskClick() },
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
@@ -209,7 +229,9 @@ fun GoalsCard() {
 }
 
 @Composable
-fun UpcomingTasksSection() {
+fun UpcomingTasksSection(
+    onTaskClick: (String, String) -> Unit = { _, _ -> }
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,63 +244,87 @@ fun UpcomingTasksSection() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+        TaskItem(
+            title = "Math Assignment",
+            dueDate = "Due Tomorrow",
+            onTaskClick = {
+                onTaskClick("Math Assignment", "Due Tomorrow")
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
 
-        TaskItem("Math Assignment", "Due Tomorrow")
+        TaskItem(
+            title = "History Essay",
+            dueDate = "Due Friday",
+            onTaskClick = {
+                onTaskClick("History Essay", "Due Friday")
+            }
+        )
         Spacer(modifier = Modifier.height(12.dp))
-        TaskItem("History Essay", "Due Friday")
-        Spacer(modifier = Modifier.height(12.dp))
-        TaskItem("Science Project", "Due Saturday")
+
+        TaskItem(
+            title = "Science Project",
+            dueDate = "Due Saturday",
+            onTaskClick = {
+                onTaskClick("Science Project", "Due Saturday")
+            }
+        )
     }
 }
 
 @Composable
-fun TaskItem(title: String, due: String) {
-    Card(
+fun TaskItem(
+    title: String,
+    dueDate: String,
+    onTaskClick: () -> Unit
+) {
+    Row(
         modifier = Modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            .fillMaxWidth()
+            .clickable { onTaskClick() }
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+
+        Box(
             modifier = Modifier
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .size(40.dp)
+                .background(Color(0xFF2196F3), shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "# ",
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4CAF50),
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color(0xFF1E1E1E)
-                    )
-                }
-                Text(
-                    text = due,
-                    color = Color(0xFF666666),
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+            Text(
+                text = title.take(1),
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = Color(0xFF1E1E1E)
+            )
+            Text(
+                text = dueDate,
+                fontSize = 14.sp,
+                color = Color(0xFF666666)
+            )
         }
     }
 }
 
 @Composable
-fun FlashCardsSection() {
+fun FlashCardsSection(
+    onFlashcardsClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onFlashcardsClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -303,15 +349,27 @@ fun FlashCardsSection() {
                     fontSize = 14.sp
                 )
             }
+
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(Color(0xFFE8F5E8), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("→", fontSize = 16.sp, color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+            }
         }
     }
 }
 
 @Composable
-fun ProgressSection() {
+fun ProgressSection(
+    onProgressClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onProgressClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -319,16 +377,32 @@ fun ProgressSection() {
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            Text(
-                text = "Weekly Progress Snapshot",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = Color(0xFF1E1E1E)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Weekly Progress Snapshot",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF1E1E1E)
+                )
+
+
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(Color(0xFFE8F5E8), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("→", fontSize = 14.sp, color = Color(0xFF4CAF50))
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Study Hours
+
             Text("Study Hours", color = Color.Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text("12", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF1E1E1E))
@@ -341,7 +415,7 @@ fun ProgressSection() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Graph
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
