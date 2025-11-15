@@ -8,4 +8,8 @@ object routs {
 
     var addFlashCard = "add_flashcard_screen"
 
+    var statisticsScreen = "statistics"
+
+
+
 }

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.studify_app.AddFlashCard
+import com.example.studify_app.StatisticsScreen
 
 @Composable
 fun navigation() {
@@ -26,6 +27,9 @@ fun navigation() {
         }
         composable(routs.addFlashCard) {
             AddFlashCard(navController)
+        }
+        composable(routs.statisticsScreen) {
+            StatisticsScreen(navController)
         }
 
     })

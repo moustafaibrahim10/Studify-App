@@ -86,7 +86,7 @@ fun flashCard_testing_screen(
                     )
                 }
             }else{
-                navController.navigate(routs.flashcardsAnalytics)
+                navController.navigate(routs.statisticsScreen)
             }
 
 

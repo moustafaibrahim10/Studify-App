@@ -30,13 +30,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.finalfinalefinal.routs
 
 val BackgroundMintGreen = Color(0xFFE8F5E9)
 val PrimaryTextColor = Color(0xFF333333)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatisticsScreen() {
+fun StatisticsScreen(navController: NavHostController) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -52,7 +54,14 @@ fun StatisticsScreen() {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = {
+                        navController.navigate(routs.deckDetails) {
+                            popUpTo(routs.statisticsScreen) {
+                                inclusive = true
+                            }
+                        }
+
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "رجوع")
                     }
                 },
@@ -126,8 +135,7 @@ fun StatCard(title: String, value: String, modifier: Modifier) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewStatisticsScreen() {
-    StatisticsScreen()
+fun PreviewStatisticsScreen(navController: NavHostController) {
+    StatisticsScreen(navController)
 }
