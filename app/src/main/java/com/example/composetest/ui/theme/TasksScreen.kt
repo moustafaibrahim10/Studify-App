@@ -30,15 +30,18 @@ private val Accent = Color(0xFF2F7D66)
 private val Mint = Color(0xFFE5F4EF)
 private val MintButton = Color(0xFF67C090)
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TasksScreen(
-    tasks: List<TaskUi>,
-    onAddTask: () -> Unit = {},
-    onTaskClick: (TaskUi) -> Unit = {}
-) {
-    val items = remember { mutableStateListOf<TaskUi>().also { it.addAll(tasks) } }
+fun TasksScreen() {
+
+    val items = remember {
+        mutableStateListOf(
+            TaskUi("Math", "Complete Calculus Assignment", "Due: Tomorrow"),
+            TaskUi("History", "Read Chapter 5", "Due: Friday"),
+            TaskUi("Science", "Lab Report on Photosynthesis", "Due: Next Week")
+        )
+    }
+
     var showAddSheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -79,7 +82,7 @@ fun TasksScreen(
                             .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(10.dp))
                             .padding(12.dp)
-                            .clickable { onTaskClick(task) }
+                            .clickable { /* something */ }
                     ) {
                         Text(
                             text = task.subject,
@@ -110,7 +113,13 @@ fun TasksScreen(
             onDismiss = { showAddSheet = false },
             onConfirm = { title, subject, deadline ->
                 if (title.isNotBlank() && subject.isNotBlank()) {
-                    (items).add(TaskUi(subject = subject.trim(), title = title.trim(), due = deadline.trim()))
+                    items.add(
+                        TaskUi(
+                            subject = subject.trim(),
+                            title = title.trim(),
+                            due = deadline.trim()
+                        )
+                    )
                 }
                 showAddSheet = false
             }
@@ -138,7 +147,6 @@ private fun AppFilterChip(text: String, selected: Boolean) {
     }
 }
 
-//bottom sheet 1
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddTaskSheet(
@@ -172,7 +180,11 @@ private fun AddTaskSheet(
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Outlined.Close, contentDescription = "Close")
                 }
-                Text("Add Task", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(end = 8.dp))
+                Text(
+                    "Add Task",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
                 Spacer(Modifier.size(40.dp))
             }
 
@@ -220,13 +232,7 @@ private fun AddTaskSheet(
 @Preview(showBackground = true, name = "Tasks Screen")
 @Composable
 fun TasksScreenPreview() {
-    val demoTasks = listOf(
-        TaskUi("Math", "Complete Calculus Assignment", "Due: Tomorrow"),
-        TaskUi("History", "Read Chapter 5", "Due: Friday"),
-        TaskUi("Science", "Lab Report on Photosynthesis", "Due: Next Week")
-    )
-
     MaterialTheme {
-        TasksScreen(tasks = demoTasks, onTaskClick = {})
+        TasksScreen()
     }
 }

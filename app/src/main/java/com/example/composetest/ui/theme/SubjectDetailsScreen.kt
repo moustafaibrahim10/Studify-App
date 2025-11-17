@@ -16,12 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.clickable
-
 
 private val CardTint = Color(0xFFD5E6DF)
 private val ScreenBg = Color(0xFFF9F9F9)
@@ -40,26 +38,39 @@ data class DeckUi(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubjectDetailsScreen(
-    subjectName: String,
-    initialProgress: Int = 0,
-    initialTasks: List<TaskUi> = emptyList(),
-    initialDecks: List<DeckUi> = emptyList(),
-    onBack: () -> Unit,
-    onOpenDeck: (DeckUi) -> Unit = {},
-    onStartPomodoro: () -> Unit = {},
-    onTaskClick: (TaskUi) -> Unit = {}
-) {
-    var progress by remember { mutableStateOf(initialProgress.coerceIn(0, 100)) }
-    val tasks = remember { mutableStateListOf<TaskUi>().also { it.addAll(initialTasks) } }
-    val decks = remember { mutableStateListOf<DeckUi>().also { it.addAll(initialDecks) } }
+fun SubjectDetailsScreen() {
+
+    val subjectName = appSelectedSubjectName.ifBlank { "Subject" }
+
+    var progress by remember { mutableStateOf(70) }
+
+    val tasks = remember {
+        mutableStateListOf(
+            TaskUi("Cell Structure", "Due: Apr 20"),
+            TaskUi("Photosynthesis", "Due: Apr 22"),
+            TaskUi("Genetics", "Due: Apr 25"),
+        )
+    }
+
+    val decks = remember {
+        mutableStateListOf(
+            DeckUi("Chapter 3", 15),
+            DeckUi("Chapter 4", 20),
+            DeckUi("Chapter 5", 18),
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(subjectName, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = {
+                            // زر الرجوع ببساطة يرجّعنا لشاشة المواد
+                            appCurrentScreen = "subjects"
+                        }
+                    ) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -76,7 +87,6 @@ fun SubjectDetailsScreen(
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
 
-            // Progress
             item {
                 Column(
                     modifier = Modifier
@@ -109,27 +119,24 @@ fun SubjectDetailsScreen(
                     Text("Tasks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     OutlinedButton(
                         onClick = {
-                            // إضافة عنصر تجريبي سريع
-                            tasks.add(TaskUi("New task", "Due: Apr 30"))
+                            tasks.add(TaskUi("New task", "Due: Soon"))
                         },
                         shape = RoundedCornerShape(10.dp)
                     ) { Text("Add Task") }
                 }
             }
 
-            // Tasks list
             items(tasks, key = { it.title + it.due }) { t ->
                 TaskRow(
                     task = t,
                     onCheckedChange = { checked ->
                         val idx = tasks.indexOf(t)
                         if (idx >= 0) tasks[idx] = t.copy(done = checked)
-                        // حدّثي التقدم بشكل بسيط (اختياري)
+
                         val doneCount = tasks.count { it.done }
-                        val ratio = if (tasks.isNotEmpty()) doneCount * 100 / tasks.size else initialProgress
+                        val ratio = if (tasks.isNotEmpty()) doneCount * 100 / tasks.size else 0
                         progress = ratio
-                    },
-                    onClick = { onTaskClick(t) }
+                    }
                 )
             }
 
@@ -152,12 +159,12 @@ fun SubjectDetailsScreen(
             }
 
             items(decks, key = { it.title }) { d ->
-                DeckRow(deck = d, onClick = { onOpenDeck(d) })
+                DeckRow(deck = d)
             }
 
             item {
                 Button(
-                    onClick = onStartPomodoro,
+                    onClick = { /* TODO: Start pomodoro */ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
@@ -174,8 +181,7 @@ fun SubjectDetailsScreen(
 @Composable
 private fun TaskRow(
     task: TaskUi,
-    onCheckedChange: (Boolean) -> Unit,
-    onClick: () -> Unit = {}
+    onCheckedChange: (Boolean) -> Unit
 ) {
     Surface(
         color = Color(0xFFF7FBFA),
@@ -183,7 +189,7 @@ private fun TaskRow(
         tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable { onCheckedChange(!task.done) }
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
@@ -203,14 +209,14 @@ private fun TaskRow(
 }
 
 @Composable
-private fun DeckRow(deck: DeckUi, onClick: () -> Unit) {
+private fun DeckRow(deck: DeckUi) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable { /* flashcards*/ }
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
@@ -231,29 +237,11 @@ private fun DeckRow(deck: DeckUi, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, name = "Subject Details – Preview")
 @Composable
 fun SubjectDetailsScreenPreview() {
-    val tasks = listOf(
-        TaskUi("Cell Structure", "Due: Apr 20"),
-        TaskUi("Photosynthesis", "Due: Apr 22"),
-        TaskUi("Genetics", "Due: Apr 25"),
-    )
-    val decks = listOf(
-        DeckUi("Chapter 3", 15),
-        DeckUi("Chapter 4", 20),
-        DeckUi("Chapter 5", 18),
-    )
-
+    appSelectedSubjectName = "Biology"
     MaterialTheme {
-        SubjectDetailsScreen(
-            subjectName = "Biology",
-            initialProgress = 70,
-            initialTasks = tasks,
-            initialDecks = decks,
-            onBack = {}
-        )
+        SubjectDetailsScreen()
     }
 }
-
