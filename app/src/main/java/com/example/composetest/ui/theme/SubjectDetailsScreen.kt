@@ -1,3 +1,4 @@
+// SubjectDetailsScreen.kt
 package com.example.composetest.ui.theme
 
 import androidx.compose.foundation.background
@@ -20,88 +21,59 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.clickable
-
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.finalfinalefinal.routs
 
 private val CardTint = Color(0xFFD5E6DF)
 private val ScreenBg = Color(0xFFF9F9F9)
-private val Accent   = Color(0xFF2F7D66)
+private val Accent = Color(0xFF2F7D66)
 
-data class TaskUi(
-    val title: String,
-    val due: String,
-    val done: Boolean = false
-)
-
-data class DeckUi(
-    val title: String,
-    val cardsCount: Int
-)
+data class SubjectTaskUi(val title: String, val due: String, val done: Boolean = false)
+data class DeckUi(val title: String, val cardsCount: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectDetailsScreen(
+    navController: NavHostController,
     subjectName: String,
     initialProgress: Int = 0,
-    initialTasks: List<TaskUi> = emptyList(),
+    initialTasks: List<SubjectTaskUi> = emptyList(),
     initialDecks: List<DeckUi> = emptyList(),
     onBack: () -> Unit,
-    onOpenDeck: (DeckUi) -> Unit = {},
-    onStartPomodoro: () -> Unit = {},
-    onTaskClick: (TaskUi) -> Unit = {} ,
-    onflashcardsclick: () -> Unit = {}
-
+    onStartPomodoro: () -> Unit = {}
 ) {
     var progress by remember { mutableStateOf(initialProgress.coerceIn(0, 100)) }
-    val tasks = remember { mutableStateListOf<TaskUi>().also { it.addAll(initialTasks) } }
+    val tasks = remember { mutableStateListOf<SubjectTaskUi>().also { it.addAll(initialTasks) } }
     val decks = remember { mutableStateListOf<DeckUi>().also { it.addAll(initialDecks) } }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(subjectName, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Outlined.ArrowBack, contentDescription = "Back") } }
             )
         },
         containerColor = ScreenBg
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 12.dp),
+            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-
             // Progress
             item {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White).padding(16.dp)
                 ) {
                     Text("Progress: $progress%", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        progress = { progress / 100f },
-                        color = Accent,
-                        trackColor = Color(0xFFE8EEF0),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                    )
+                    LinearProgressIndicator(progress = progress / 100f, color = Accent, trackColor = Color(0xFFE8EEF0),
+                        modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(6.dp)))
                 }
             }
 
-            // Tasks header + Add
+            // Tasks Header + Add
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -109,149 +81,96 @@ fun SubjectDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Tasks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    OutlinedButton(
-                        onClick = {
-                            // إضافة عنصر تجريبي سريع
-                            tasks.add(TaskUi("New task", "Due: Apr 30"))
-                        },
-                        shape = RoundedCornerShape(10.dp)
-                    ) { Text("Add Task") }
+                    OutlinedButton(onClick = { navController.navigate("tasks") }, shape = RoundedCornerShape(10.dp)) { Text("Add Task") }
                 }
             }
 
-            // Tasks list
+            // Tasks List
             items(tasks, key = { it.title + it.due }) { t ->
-                TaskRow(
-                    task = t,
+                TaskRow(task = t,
                     onCheckedChange = { checked ->
                         val idx = tasks.indexOf(t)
                         if (idx >= 0) tasks[idx] = t.copy(done = checked)
-                        // حدّثي التقدم بشكل بسيط (اختياري)
                         val doneCount = tasks.count { it.done }
-                        val ratio = if (tasks.isNotEmpty()) doneCount * 100 / tasks.size else initialProgress
-                        progress = ratio
+                        progress = if (tasks.isNotEmpty()) doneCount * 100 / tasks.size else initialProgress
                     },
-                    onClick = { onTaskClick(t) }
+                    onClick = { navController.navigate("taskDetail/${t.title}/$subjectName/${t.due}") }
                 )
             }
 
+            // Decks Header + Add
             item {
                 Row(
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 2.dp)
-                        .clickable(onClick=onflashcardsclick),
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp).clickable { navController.navigate(routs.deckList) },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Flashcards Decks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    OutlinedButton(
-                        onClick = {
-                            decks.add(DeckUi("New deck", 10))
-                        },
-                        shape = RoundedCornerShape(10.dp)
-                    ) { Text("Add deck") }
+                    OutlinedButton(onClick = { navController.navigate(routs.deckList) }, shape = RoundedCornerShape(10.dp)) { Text("Add deck") }
                 }
             }
 
-            items(decks, key = { it.title }) { d ->
-                DeckRow(deck = d, onClick = { onOpenDeck(d) })
-            }
+            items(decks, key = { it.title }) { d -> DeckRow(deck = d, onClick = { /* Navigate to DeckDetails if needed */ }) }
 
             item {
                 Button(
                     onClick = onStartPomodoro,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = CardTint),
                     shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Start Pomodoro", color = Color.Black, fontWeight = FontWeight.SemiBold)
-                }
+                ) { Text("Start Pomodoro", color = Color.Black, fontWeight = FontWeight.SemiBold) }
             }
         }
     }
 }
 
 @Composable
-private fun TaskRow(
-    task: TaskUi,
-    onCheckedChange: (Boolean) -> Unit,
-    onClick: () -> Unit = {}
-) {
-    Surface(
-        color = Color(0xFFF7FBFA),
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+private fun TaskRow(task: SubjectTaskUi, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit = {}) {
+    Surface(color = Color(0xFFF7FBFA), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(task.title, fontWeight = FontWeight.SemiBold)
                 Text(task.due, fontSize = 12.sp, color = Color(0xFF3AA77E))
             }
-            Checkbox(
-                checked = task.done,
-                onCheckedChange = onCheckedChange
-            )
+            Checkbox(checked = task.done, onCheckedChange = onCheckedChange)
         }
     }
 }
 
 @Composable
 private fun DeckRow(deck: DeckUi, onClick: () -> Unit) {
-    Surface(
-        color = Color.White,
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+    Surface(color = Color.White, shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("${deck.title} - ${deck.cardsCount} cards", fontWeight = FontWeight.Medium)
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFF1F5F4)),
+            Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(Color(0xFFF1F5F4)),
                 contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Outlined.ChevronRight, contentDescription = null)
-            }
+            ) { Icon(Icons.Outlined.ChevronRight, contentDescription = null) }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, name = "Subject Details – Preview")
+@Preview(showBackground = true)
 @Composable
 fun SubjectDetailsScreenPreview() {
     val tasks = listOf(
-        TaskUi("Cell Structure", "Due: Apr 20"),
-        TaskUi("Photosynthesis", "Due: Apr 22"),
-        TaskUi("Genetics", "Due: Apr 25"),
+        SubjectTaskUi("Cell Structure", "Due: Apr 20"),
+        SubjectTaskUi("Photosynthesis", "Due: Apr 22"),
+        SubjectTaskUi("Genetics", "Due: Apr 25"),
     )
     val decks = listOf(
         DeckUi("Chapter 3", 15),
         DeckUi("Chapter 4", 20),
         DeckUi("Chapter 5", 18),
     )
-
     MaterialTheme {
         SubjectDetailsScreen(
+            navController = rememberNavController(),
             subjectName = "Biology",
             initialProgress = 70,
             initialTasks = tasks,
@@ -260,4 +179,3 @@ fun SubjectDetailsScreenPreview() {
         )
     }
 }
-

@@ -61,11 +61,12 @@ fun SetSub(){
                 arguments = listOf(navArgument("name") { type = NavType.StringType })
             ) { backStackEntry ->
                 val name = backStackEntry.arguments?.getString("name") ?: ""
-                val tasks = listOf(
-                    TaskUi("Cell Structure", "Due: Apr 20"),
-                    TaskUi("Photosynthesis", "Due: Apr 22"),
-                    TaskUi("Genetics", "Due: Apr 25"),
+                val tasksSubjects = listOf(
+                    SubjectTaskUi("Math", "Cell Structure", false),
+                    SubjectTaskUi("Science", "Photosynthesis", false),
+                    SubjectTaskUi("Biology", "Genetics", false)
                 )
+
                 val decks = listOf(
                     DeckUi("Chapter 3", 15),
                     DeckUi("Chapter 4", 20),
@@ -74,14 +75,13 @@ fun SetSub(){
                 val progress = subjects.find { it.name == name }?.progress ?: 0
 
                 SubjectDetailsScreen(
+                    nav,
                     subjectName = name,
                     initialProgress = progress,
-                    initialTasks = tasks,
+                    initialTasks = tasksSubjects,
                     initialDecks = decks,
                     onBack = { nav.popBackStack() },
-                    onOpenDeck = { /* nav to deck if needed */ },
                     onStartPomodoro = { /* TODO: open pomodoro */ },
-                    onflashcardsclick = ({ nav.navigate(routs.deckList) })
                 )
             }
             composable(routs.deckList) {
@@ -115,13 +115,13 @@ fun SubjectsScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Subjects", fontWeight = FontWeight.Bold) },
-                    actions = {
-                        IconButton(onClick = {}) {
-                            Icon(Icons.Outlined.Person, contentDescription = "Profile")
+                    title = {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text(text = "Subjects", fontWeight = FontWeight.Bold)
                         }
                     }
                 )
+
             },
             // ⬇️ شيلنا الـ bottomBar
             containerColor = ScreenBg,

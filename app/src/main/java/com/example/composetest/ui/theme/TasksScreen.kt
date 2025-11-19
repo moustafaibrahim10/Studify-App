@@ -15,9 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import java.net.URLEncoder
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 data class TaskUi(
     val subject: String,
@@ -30,21 +33,41 @@ private val Accent = Color(0xFF2F7D66)
 private val Mint = Color(0xFFE5F4EF)
 private val MintButton = Color(0xFF67C090)
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(
+    navController: NavController,
     tasks: List<TaskUi>,
-    onAddTask: () -> Unit = {},
-    onTaskClick: (TaskUi) -> Unit = {}
+    onAddTask: () -> Unit = {}
 ) {
     val items = remember { mutableStateListOf<TaskUi>().also { it.addAll(tasks) } }
     var showAddSheet by remember { mutableStateOf(false) }
+    var selectedFilter by remember { mutableStateOf("All") } // All, Today, By Subject
+
+    val filteredTasks = remember(selectedFilter, items) {
+        when (selectedFilter) {
+            "Today" -> {
+                val todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM d"))
+                items.filter { it.due.contains(todayStr) }
+            }
+            "By Subject" -> items.sortedBy { it.subject }
+            else -> items
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tasks", fontWeight = FontWeight.Bold) },
+                title = {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text("Tasks", fontWeight = FontWeight.Bold)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Outlined.Close, contentDescription = "Back")
+                    }
+                },
                 actions = {
                     IconButton(onClick = { showAddSheet = true }) {
                         Icon(Icons.Outlined.Add, contentDescription = "Add Task")
@@ -65,40 +88,78 @@ fun TasksScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AppFilterChip("All", true)
-                AppFilterChip("Today", false)
-                AppFilterChip("By Subject", false)
+                AppFilterChip("All", selectedFilter == "All") { selectedFilter = "All" }
+                AppFilterChip("Today", selectedFilter == "Today") { selectedFilter = "Today" }
+                AppFilterChip("By Subject", selectedFilter == "By Subject") { selectedFilter = "By Subject" }
             }
 
             Spacer(Modifier.height(12.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(items) { task ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(10.dp))
-                            .padding(12.dp)
-                            .clickable { onTaskClick(task) }
-                    ) {
-                        Text(
-                            text = task.subject,
-                            color = Accent,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = task.title,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Text(
-                            text = task.due,
-                            color = Color(0xFF4CAF50),
-                            fontSize = 13.sp,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
+                if (filteredTasks.isEmpty()) {
+                    // رسالة احترافية للفلتر الحالي
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = null,
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                Text(
+                                    text = when (selectedFilter) {
+                                        "Today" -> "No tasks for today 🎯"
+                                        "By Subject" -> "No tasks available"
+                                        else -> "No tasks available"
+                                    },
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    items(filteredTasks) { task ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White, RoundedCornerShape(10.dp))
+                                .padding(12.dp)
+                                .clickable {
+                                    navController.navigate(
+                                        "taskDetail/${URLEncoder.encode(task.title, "UTF-8")}/" +
+                                                "${URLEncoder.encode(task.subject, "UTF-8")}/" +
+                                                "${URLEncoder.encode(task.due, "UTF-8")}"
+                                    )
+                                }
+                        ) {
+                            Text(
+                                text = task.subject,
+                                color = Accent,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = task.title,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 15.sp,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                            Text(
+                                text = task.due,
+                                color = Color(0xFF4CAF50),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -119,11 +180,12 @@ fun TasksScreen(
 }
 
 @Composable
-private fun AppFilterChip(text: String, selected: Boolean) {
+private fun AppFilterChip(text: String, selected: Boolean, onClick: () -> Unit) {
     Surface(
         color = if (selected) Mint else Color.White,
         shape = RoundedCornerShape(16.dp),
-        tonalElevation = 1.dp
+        tonalElevation = 1.dp,
+        modifier = Modifier.clickable(onClick = onClick)
     ) {
         Box(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
@@ -138,7 +200,6 @@ private fun AppFilterChip(text: String, selected: Boolean) {
     }
 }
 
-//bottom sheet 1
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddTaskSheet(
@@ -214,19 +275,5 @@ private fun AddTaskSheet(
 
             Spacer(Modifier.height(12.dp))
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Tasks Screen")
-@Composable
-fun TasksScreenPreview() {
-    val demoTasks = listOf(
-        TaskUi("Math", "Complete Calculus Assignment", "Due: Tomorrow"),
-        TaskUi("History", "Read Chapter 5", "Due: Friday"),
-        TaskUi("Science", "Lab Report on Photosynthesis", "Due: Next Week")
-    )
-
-    MaterialTheme {
-        TasksScreen(tasks = demoTasks, onTaskClick = {})
     }
 }

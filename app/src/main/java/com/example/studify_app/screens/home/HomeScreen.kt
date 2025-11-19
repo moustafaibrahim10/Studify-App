@@ -21,9 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.studify_app.R
-
 import com.example.finalfinalefinal.routs
 
 @Composable
@@ -108,7 +106,6 @@ fun GreetingSection() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.owl_home),
             contentDescription = "Owl",
@@ -117,7 +114,6 @@ fun GreetingSection() {
                 .padding(8.dp),
             contentScale = ContentScale.Fit
         )
-
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -155,7 +151,7 @@ fun ActionButtonsSection(navController: NavController) {
         }
 
         Button(
-            onClick = { /* Add Task */ },
+            onClick = { navController.navigate("tasks") },
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
@@ -171,7 +167,8 @@ fun ActionButtonsSection(navController: NavController) {
 fun GoalsCard(navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { navController.navigate("tasks") },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -227,63 +224,46 @@ fun UpcomingTasksSection(navController: NavController) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-
-        TaskItem("Math Assignment", "Due Tomorrow")
+        TaskItem("Math Assignment","Math","Due Tomorrow", navController)
         Spacer(modifier = Modifier.height(12.dp))
-        TaskItem("History Essay", "Due Friday")
+        TaskItem("History Essay","History", "Due Friday", navController)
         Spacer(modifier = Modifier.height(12.dp))
-        TaskItem("Science Project", "Due Saturday")
+        TaskItem("Science Project","Science", "Due Saturday", navController)
     }
 }
-
 @Composable
-fun TaskItem(title: String, due: String) {
+fun TaskItem(title: String, subject: String, due: String, navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { navController.navigate("taskDetail/$title/$subject/$due") },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "# ",
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4CAF50),
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color(0xFF1E1E1E)
-                    )
+                    Text("# ", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50), fontSize = 16.sp)
+                    Text(title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF1E1E1E))
                 }
-                Text(
-                    text = due,
-                    color = Color(0xFF666666),
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                Text(due, color = Color(0xFF666666), fontSize = 14.sp, modifier = Modifier.padding(start = 16.dp))
             }
         }
     }
 }
 
+
 @Composable
 fun FlashCardsSection(navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth().clickable { navController.navigate(routs.deckList) },
+            .fillMaxWidth()
+            .clickable { navController.navigate(routs.deckList) },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -316,7 +296,8 @@ fun FlashCardsSection(navController: NavController) {
 fun ProgressSection(navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth().clickable{navController.navigate("progress")},
+            .fillMaxWidth()
+            .clickable { navController.navigate("progress") },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

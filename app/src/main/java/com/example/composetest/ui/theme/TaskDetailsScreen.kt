@@ -1,21 +1,20 @@
 package com.example.composetest.ui.theme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val ScreenBg = Color(0xFFF9F9F9)
-private val Accent   = Color(0xFF2F7D66)
 private val MintBtn  = Color(0xFF67C090)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +60,12 @@ fun TaskDetailsScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = MintBtn),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Mark as Complete", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    "Mark as Complete",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
@@ -88,18 +92,5 @@ private fun LabeledReadOnlyField(label: String, value: String) {
                 Text(value, color = Color(0xFF728C82))
             }
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Task Details – Preview")
-@Composable
-private fun TaskDetailsPreview() {
-    MaterialTheme {
-        TaskDetailsScreen(
-            title = "Complete Calculus Assignment",
-            subject = "Math",
-            due = "Tomorrow",
-            onBackToTasks = {}
-        )
     }
 }
