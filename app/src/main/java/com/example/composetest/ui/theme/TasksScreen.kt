@@ -213,8 +213,7 @@ private fun AppFilterChip(text: String, selected: Boolean, onClick: () -> Unit) 
     }
 }
 
-// --- Add Task Sheet with Date Pick
-// er ---
+// --- Add Task Sheet with Date Picker ---
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
