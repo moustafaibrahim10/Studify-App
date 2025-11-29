@@ -21,59 +21,47 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.data.DataRepository
 import com.example.studify_app.R
 import com.example.finalfinalefinal.routs
+import com.example.model.Task
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    val gradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFF67C090), Color(0xFFE6F4EA))
-    )
+
+    val tasks = DataRepository.tasks
+    val decks = DataRepository.decks
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gradient),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        item {
-            HeaderSection()
+        item { HeaderSection()
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        item { GreetingSection()
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        item { ActionButtonsSection(navController)
             Spacer(modifier = Modifier.height(24.dp))
         }
 
         item {
-            GreetingSection()
+            GoalsCard(navController, tasks) // <-- Pass tasks
             Spacer(modifier = Modifier.height(24.dp))
+
         }
 
         item {
-            ActionButtonsSection(navController)
-            Spacer(modifier = Modifier.height(20.dp))
+            FlashCardsSection(navController, decks.size)  // <-- Pass deck count
+            Spacer(modifier = Modifier.height(24.dp))
+
         }
 
-        item {
-            GoalsCard(navController)
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-        item {
-            UpcomingTasksSection(navController)
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-        item {
-            FlashCardsSection(navController)
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-        item {
-            ProgressSection(navController)
-            Spacer(modifier = Modifier.height(32.dp))
-        }
+        item { ProgressSection(navController) }
     }
 }
-
 @Composable
 fun HeaderSection() {
     Row(
@@ -88,16 +76,7 @@ fun HeaderSection() {
             fontSize = 24.sp,
             color = Color(0xFF1E1E1E)
         )
-        IconButton(
-            onClick = { /* Handle settings */ },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "Menu",
-                tint = Color(0xFF1E1E1E)
-            )
-        }
+
     }
 }
 
@@ -110,12 +89,10 @@ fun GreetingSection() {
             painter = painterResource(id = R.drawable.owl_home),
             contentDescription = "Owl",
             modifier = Modifier
-                .size(240.dp)
+                .size(300.dp)
                 .padding(8.dp),
             contentScale = ContentScale.Fit
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Hi, Sophia!",
@@ -144,7 +121,7 @@ fun ActionButtonsSection(navController: NavController) {
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090)),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text("Start Pomodoro", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
@@ -155,56 +132,51 @@ fun ActionButtonsSection(navController: NavController) {
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090)),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Add Task", color = Color(0xFF4CAF50), fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text("Add Task",  color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
 
 @Composable
-fun GoalsCard(navController: NavController) {
+fun GoalsCard(navController: NavController, tasks: List<Task>) {
+
+    val nextTask = tasks.firstOrNull()   // Get first task if exists
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { navController.navigate("tasks") },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFCEE1DE)),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
+
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
-                text = "Today + Goals",
+                text = "Next Task",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = Color(0xFF1E1E1E)
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column {
-                    Text("2 Tasks Left", fontWeight = FontWeight.Medium, fontSize = 16.sp, color = Color(0xFF1E1E1E))
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text("3 Study Hours", fontSize = 14.sp, color = Color(0xFF666666))
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(Color(0xFFE8F5E8), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("🎯", fontSize = 18.sp)
-                }
+            if (nextTask != null) {
+                Text(
+                    text = nextTask.title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = nextTask.due.toString(),
+                    fontSize = 14.sp,
+                    color = Color(0xFF666666)
+                )
+            } else {
+                Text("No tasks added", fontSize = 14.sp, color = Color.Gray)
             }
         }
     }
@@ -259,15 +231,16 @@ fun TaskItem(title: String, subject: String, due: String, navController: NavCont
 
 
 @Composable
-fun FlashCardsSection(navController: NavController) {
+fun FlashCardsSection(navController: NavController, deckCount: Int) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { navController.navigate(routs.deckList) },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFCEE1DE)),
+        shape = RoundedCornerShape(16.dp)
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -277,13 +250,14 @@ fun FlashCardsSection(navController: NavController) {
         ) {
             Column {
                 Text(
-                    text = "Flashcards Due Today",
+                    text = "Flashcards",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color(0xFF1E1E1E)
                 )
+
                 Text(
-                    text = "5 Flashcards",
+                    text = "$deckCount Decks",
                     color = Color(0xFF666666),
                     fontSize = 14.sp
                 )

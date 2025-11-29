@@ -57,6 +57,7 @@ dependencies {
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.play.services.mlkit.subject.segmentation)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(platform(libs.androidx.compose.bom))
 

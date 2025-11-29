@@ -169,8 +169,9 @@ fun MainScaffold(
 
             composable("subjects") {
                 SubjectsScreen(
-                    subjects = subjects,
-                    onSubjectClick = { s -> navController.navigate("subject/${s.name}") }
+                    onSubjectClick = { s ->
+                        navController.navigate("subject/${s.name}")
+                    }
                 )
             }
 
