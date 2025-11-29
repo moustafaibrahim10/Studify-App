@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 @Composable
 fun deck_details_screen(
     navController: NavController,
+    deckName: String,
     onstartreviewClick: () -> Unit={navController.navigate(routs.flashCardTesting)}
 ){
 //    var isAddFlashcardDialogOpen by rememberSaveable { mutableStateOf(false) }

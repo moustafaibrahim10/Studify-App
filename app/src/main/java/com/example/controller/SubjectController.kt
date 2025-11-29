@@ -24,7 +24,7 @@ class SubjectController {
     fun updateProgress(subject: Subject) {
         val total = subject.tasks.size
         val completed = subject.tasks.count { it.completed }
-        subject.progress = if (total > 0) completed * 100 / total else 0
+        subject.currentprogress = if (total > 0) completed * 100 / total else 0
     }
 
     fun addTask(subject: Subject, task: Task) {

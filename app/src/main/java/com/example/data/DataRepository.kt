@@ -20,6 +20,14 @@ object DataRepository {
         subjects.remove(subject)
     }
 
+    fun addSubjectTask(subject: Subject?, task: Task) {
+        subjects.find { it == subject }?.tasks?.add(task)
+    }
+    fun addSubjectDeck(subject: Subject?, deck: Deck) {
+        subjects.find { it == subject }?.decks?.add(deck)
+    }
+
+
     fun getSubjectByName(name: String): Subject? {
         return subjects.find { it.name == name }
     }

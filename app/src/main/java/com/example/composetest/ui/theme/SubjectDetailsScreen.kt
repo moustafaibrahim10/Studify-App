@@ -1,6 +1,8 @@
 // SubjectDetailsScreen.kt
 package com.example.composetest.ui.theme
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,32 +24,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.example.data.DataRepository
 import com.example.finalfinalefinal.routs
+import com.example.model.Deck
+import com.example.model.Task
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 private val CardTint = Color(0xFFD5E6DF)
 private val ScreenBg = Color(0xFFF9F9F9)
 private val Accent = Color(0xFF2F7D66)
 
+private val MintButton = Color(0xFF67C090)
+
+
 data class SubjectTaskUi(val title: String, val due: String, val done: Boolean = false)
 data class DeckUi(val title: String, val cardsCount: Int)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectDetailsScreen(
     navController: NavHostController,
     subjectName: String,
-    initialProgress: Int = 0,
-    initialTasks: List<SubjectTaskUi> = emptyList(),
-    initialDecks: List<DeckUi> = emptyList(),
     onBack: () -> Unit,
     onStartPomodoro: () -> Unit = {}
 ) {
-    var progress by remember { mutableStateOf(initialProgress.coerceIn(0, 100)) }
-    val tasks = remember { mutableStateListOf<SubjectTaskUi>().also { it.addAll(initialTasks) } }
-    val decks = remember { mutableStateListOf<DeckUi>().also { it.addAll(initialDecks) } }
+    var subject by remember { mutableStateOf(DataRepository.getSubjectByName(subjectName)) }
+
+    var showAddTaskSheet by remember { mutableStateOf(false) }
+    var showAddDeckSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -66,10 +78,17 @@ fun SubjectDetailsScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White).padding(16.dp)
                 ) {
-                    Text("Progress: $progress%", fontWeight = FontWeight.SemiBold)
+                    Text("Progress: ${subject?.currentprogress}%", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(progress = progress / 100f, color = Accent, trackColor = Color(0xFFE8EEF0),
-                        modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(6.dp)))
+                    LinearProgressIndicator(
+                        progress = ((subject?.currentprogress ?: 0) / 100f),
+                        color = Accent,
+                        trackColor = Color(0xFFE8EEF0),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                    )
                 }
             }
 
@@ -81,20 +100,31 @@ fun SubjectDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Tasks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    OutlinedButton(onClick = { navController.navigate("tasks") }, shape = RoundedCornerShape(10.dp)) { Text("Add Task") }
+                    OutlinedButton(
+                        onClick = { showAddTaskSheet = true },
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Add Task")
+                    }
                 }
             }
 
             // Tasks List
-            items(tasks, key = { it.title + it.due }) { t ->
-                TaskRow(task = t,
+            items(subject?.tasks ?: emptyList(), key = { it.title + it.due.toString() }) { task ->
+                TaskRow(
+                    task = task,
                     onCheckedChange = { checked ->
-                        val idx = tasks.indexOf(t)
-                        if (idx >= 0) tasks[idx] = t.copy(done = checked)
-                        val doneCount = tasks.count { it.done }
-                        progress = if (tasks.isNotEmpty()) doneCount * 100 / tasks.size else initialProgress
+                        task.isDone = checked
+
+                        val doneCount = subject?.tasks?.count { it.isDone } ?: 0
+                        val total = subject?.tasks?.size ?: 0
+                        subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
                     },
-                    onClick = { navController.navigate("taskDetail/${t.title}/$subjectName/${t.due}") }
+                    onClick = {
+                        navController.navigate(
+                            "taskDetail/${task.title}/${subject?.name ?: ""}/${task.due}"
+                        )
+                    }
                 )
             }
 
@@ -106,12 +136,18 @@ fun SubjectDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Flashcards Decks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    OutlinedButton(onClick = { navController.navigate(routs.deckList) }, shape = RoundedCornerShape(10.dp)) { Text("Add deck") }
+                    OutlinedButton(
+                        onClick = { showAddDeckSheet = true },
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Add Deck")
+                    }
                 }
             }
 
-            items(decks, key = { it.title }) { d -> DeckRow(deck = d, onClick = { /* Navigate to DeckDetails if needed */ }) }
-
+            items(subject?.decks ?: emptyList(), key = { it.title }) { deck ->
+                DeckRow(deck = deck, onClick = {  navController.navigate("deckDetails/${deck.title}")})
+            }
             item {
                 Button(
                     onClick = onStartPomodoro,
@@ -122,10 +158,40 @@ fun SubjectDetailsScreen(
             }
         }
     }
+
+    if (showAddTaskSheet) {
+        AddTaskSheet(
+            onDismiss = { showAddTaskSheet = false },
+            onConfirm = { title, due ->
+                val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
+                val date = LocalDate.parse(due, formatter)
+                    DataRepository.addSubjectTask(subject, Task(title, date))
+                DataRepository.addTask(Task(title, date))
+                    showAddTaskSheet = false
+
+
+                val doneCount = subject?.tasks?.count { it.isDone } ?: 0
+                val total = subject?.tasks?.size ?: 0
+                subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
+            }
+        )
+    }
+
+    if (showAddDeckSheet) {
+        AddDeckSheet(
+            onDismiss = { showAddDeckSheet = false },
+            onConfirm = { name ->
+                DataRepository.addSubjectDeck(subject, Deck(name))
+                DataRepository.addDeck(Deck(name))
+                showAddDeckSheet = false
+            }
+        )
+    }
+
 }
 
 @Composable
-private fun TaskRow(task: SubjectTaskUi, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit = {}) {
+private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit = {}) {
     Surface(color = Color(0xFFF7FBFA), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
     ) {
@@ -133,21 +199,24 @@ private fun TaskRow(task: SubjectTaskUi, onCheckedChange: (Boolean) -> Unit, onC
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(task.title, fontWeight = FontWeight.SemiBold)
-                Text(task.due, fontSize = 12.sp, color = Color(0xFF3AA77E))
+                Text(task.due.toString(), fontSize = 12.sp, color = Color(0xFF3AA77E))
             }
-            Checkbox(checked = task.done, onCheckedChange = onCheckedChange)
+            Checkbox(
+                checked = task.isDone,
+                onCheckedChange = onCheckedChange
+            )
         }
     }
 }
 
 @Composable
-private fun DeckRow(deck: DeckUi, onClick: () -> Unit) {
+private fun DeckRow(deck: Deck, onClick: () -> Unit) {
     Surface(color = Color.White, shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
     ) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("${deck.title} - ${deck.cardsCount} cards", fontWeight = FontWeight.Medium)
+            Text("${deck.title} - ${deck.cards.size} cards", fontWeight = FontWeight.Medium)
             Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(Color(0xFFF1F5F4)),
                 contentAlignment = Alignment.Center
             ) { Icon(Icons.Outlined.ChevronRight, contentDescription = null) }
@@ -155,27 +224,183 @@ private fun DeckRow(deck: DeckUi, onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
+// --- Add Task Sheet (No Subject Field) ---
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubjectDetailsScreenPreview() {
-    val tasks = listOf(
-        SubjectTaskUi("Cell Structure", "Due: Apr 20"),
-        SubjectTaskUi("Photosynthesis", "Due: Apr 22"),
-        SubjectTaskUi("Genetics", "Due: Apr 25"),
-    )
-    val decks = listOf(
-        DeckUi("Chapter 3", 15),
-        DeckUi("Chapter 4", 20),
-        DeckUi("Chapter 5", 18),
-    )
-    MaterialTheme {
-        SubjectDetailsScreen(
-            navController = rememberNavController(),
-            subjectName = "Biology",
-            initialProgress = 70,
-            initialTasks = tasks,
-            initialDecks = decks,
-            onBack = {}
-        )
+fun AddTaskSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (title: String, deadline: String) -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    var title by remember { mutableStateOf("") }
+    var deadline by remember { mutableStateOf("") }
+
+    // Date Picker State
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .navigationBarsPadding()
+                .imePadding(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Outlined.Close, contentDescription = "Close")
+                }
+                Text("Add Task", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.size(40.dp))
+            }
+
+            // Title
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Deadline Field
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = deadline,
+                    onValueChange = {},
+                    label = { Text("Deadline") },
+                    readOnly = true,
+                    singleLine = true,
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(Icons.Outlined.DateRange, contentDescription = "Select Date")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Transparent clickable layer
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { showDatePicker = true }
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
+
+            // Add Button
+            Button(
+                onClick = { onConfirm(title, deadline) },
+                enabled = title.isNotBlank() && deadline.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MintButton),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Add Task", color = Color.White, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+
+    // Date Picker Dialog
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val selectedMillis = datePickerState.selectedDateMillis
+                        if (selectedMillis != null) {
+                            deadline = convertMillisToDate(selectedMillis)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
+private fun convertMillisToDate(millis: Long): String {
+    val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy") // مثال: Nov 28, 2025
+    return Instant.ofEpochMilli(millis)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+        .format(formatter)
+}
+
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddDeckSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (name: String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text("Add Deck", style = MaterialTheme.typography.titleMedium)
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Deck Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                    Text("Cancel")
+                }
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = { onConfirm(name) },
+                    enabled = name.isNotBlank(),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add")
+                }
+            }
+        }
+    }
+}
+

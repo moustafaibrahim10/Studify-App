@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,54 +41,6 @@ import com.example.finalfinalefinal.routs
 import com.example.model.Subject
 
 
-@Composable
-fun SetSub(){
-    MaterialTheme {
-        val nav = rememberNavController()
-        NavHost(navController = nav, startDestination = "subjects") {
-
-            composable("subjects") {
-                SubjectsScreen(
-                    onSubjectClick = { s ->
-                        nav.navigate("subject/${s.name}")
-                    }
-                )
-            }
-
-            composable(
-                route = "subject/{name}",
-                arguments = listOf(navArgument("name") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val name = backStackEntry.arguments?.getString("name") ?: ""
-                val tasksSubjects = listOf(
-                    SubjectTaskUi("Math", "Cell Structure", false),
-                    SubjectTaskUi("Science", "Photosynthesis", false),
-                    SubjectTaskUi("Biology", "Genetics", false)
-                )
-
-                val decks = listOf(
-                    DeckUi("Chapter 3", 15),
-                    DeckUi("Chapter 4", 20),
-                    DeckUi("Chapter 5", 18),
-                )
-                val progress = subjects.find { it.name == name }?.progress ?: 0
-
-                SubjectDetailsScreen(
-                    nav,
-                    subjectName = name,
-                    initialProgress = progress,
-                    initialTasks = tasksSubjects,
-                    initialDecks = decks,
-                    onBack = { nav.popBackStack() },
-                    onStartPomodoro = { /* TODO: open pomodoro */ },
-                )
-            }
-            composable(routs.deckList) {
-                decks_list(navController = nav)
-            }
-        }
-    }
-}
 data class SubjectUi(
     val name: String,
     val progress: Int,
@@ -102,9 +56,9 @@ private val Mint     = Color(0xFF67C090)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectsScreen(
+    navController: NavController,
     onSubjectClick: (Subject) -> Unit = {},
 ) {
-    val controller = remember { SubjectController() }
 
     val subjects = DataRepository.subjects
 
@@ -166,7 +120,7 @@ fun SubjectsScreen(
         AddSubjectSheet(
             onDismiss = { showAddSheet = false },
             onConfirm = { name ->
-                controller.addSubject(name.trim())  // ⭐ CHANGE
+                DataRepository.addSubject(Subject(name))
                 showAddSheet = false
             }
         )
@@ -191,13 +145,13 @@ private fun SubjectCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            Text("${subject.progress}%", color = Accent, fontSize = 13.sp)
+            Text("${subject.currentprogress}%", color = Accent, fontSize = 13.sp)
             Spacer(Modifier.height(2.dp))
             Text(subject.name, fontWeight = FontWeight.Black, fontSize = 18.sp)
 
             Spacer(Modifier.height(10.dp))
             LinearProgressIndicator(
-                progress = { subject.progress / 100f },
+                progress = { subject.currentprogress / 100f },
                 color = Accent,
                 trackColor = Color.White.copy(alpha = 0.7f),
                 modifier = Modifier
@@ -215,23 +169,12 @@ private fun SubjectCard(
     }
 }
 
-@Preview(name = "Subjects - Light", showBackground = true)
-@Preview(name = "Subjects - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun SubjectsPreview() {
-    // Make sure the repository is empty for preview
-    DataRepository.subjects.clear()
-
-    MaterialTheme {
-        SubjectsScreen(onSubjectClick = {})
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddSubjectSheet(
     onDismiss: () -> Unit,
-    onConfirm: (name: String) -> Unit     // ⭐ CHANGE → Only name now
+    onConfirm: (name: String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
 
