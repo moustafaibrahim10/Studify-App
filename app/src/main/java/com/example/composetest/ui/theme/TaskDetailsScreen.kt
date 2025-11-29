@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.DataRepository
 
 private val ScreenBg = Color(0xFFF9F9F9)
 private val MintBtn  = Color(0xFF67C090)
@@ -26,6 +27,7 @@ fun TaskDetailsScreen(
     onBackToTasks: () -> Unit,
     onMarkComplete: () -> Unit = {}
 ) {
+    val task = DataRepository.tasks.find { it.title == title }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,7 +55,7 @@ fun TaskDetailsScreen(
             Spacer(Modifier.height(4.dp))
 
             Button(
-                onClick = onMarkComplete,
+                onClick = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),

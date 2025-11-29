@@ -19,6 +19,7 @@ data class Subject(
 //FlashcardsDeck Model
 data class Deck(
     val title: String,
+    val subject: String,
     val cards: MutableList<Flashcard> = mutableStateListOf()
 )
 
@@ -31,6 +32,7 @@ data class Flashcard(
 //Task Model
 data class Task(
     var title: String,
+    var subject: String,
     var due: LocalDate,
     var completed: Boolean = false
 ){

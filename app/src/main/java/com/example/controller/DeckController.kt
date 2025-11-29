@@ -8,7 +8,7 @@ import com.example.model.Subject
 class DeckController {
 
     fun addDeck(subject: Subject, title: String): Deck {
-        val deck = Deck(title)
+        val deck = Deck(title, subject.name)
         subject.decks.add(deck)
         DataRepository.addDeck(deck)
         return deck

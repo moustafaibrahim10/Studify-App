@@ -166,8 +166,6 @@ fun MainScaffold(
             composable("tasks") {
                 TasksScreen(
                     navController = navController,
-                    tasks = tasks,
-                    onAddTask = { /* handled inside TasksScreen */ }
                 )
             }
 
@@ -210,11 +208,7 @@ fun MainScaffold(
                     subject = subject,
                     due = due,
                     onBackToTasks = { navController.popBackStack() },
-                    onMarkComplete = {
-                        // حذف المهمة من قائمة Tasks الأصلية
-                        tasks.removeAll { it.title == title && it.due == due }
-                        navController.popBackStack()
-                    }
+
                 )
             }
 

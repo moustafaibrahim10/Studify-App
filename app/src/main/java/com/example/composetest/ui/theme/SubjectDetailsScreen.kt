@@ -54,7 +54,10 @@ fun SubjectDetailsScreen(
     onBack: () -> Unit,
     onStartPomodoro: () -> Unit = {}
 ) {
-    var subject by remember { mutableStateOf(DataRepository.getSubjectByName(subjectName)) }
+    val subject = DataRepository.getSubjectByName(subjectName)
+    val doneCount = subject?.tasks?.count { it.isDone } ?: 0
+    val total = subject?.tasks?.size ?: 0
+    subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
 
     var showAddTaskSheet by remember { mutableStateOf(false) }
     var showAddDeckSheet by remember { mutableStateOf(false) }
@@ -165,9 +168,8 @@ fun SubjectDetailsScreen(
             onConfirm = { title, due ->
                 val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
                 val date = LocalDate.parse(due, formatter)
-                    DataRepository.addSubjectTask(subject, Task(title, date))
-                DataRepository.addTask(Task(title, date))
-                    showAddTaskSheet = false
+                DataRepository.addTask(Task(title, subjectName, date))
+                showAddTaskSheet = false
 
 
                 val doneCount = subject?.tasks?.count { it.isDone } ?: 0
@@ -181,8 +183,8 @@ fun SubjectDetailsScreen(
         AddDeckSheet(
             onDismiss = { showAddDeckSheet = false },
             onConfirm = { name ->
-                DataRepository.addSubjectDeck(subject, Deck(name))
-                DataRepository.addDeck(Deck(name))
+                DataRepository.addSubjectDeck(subject, Deck(name, subjectName))
+                DataRepository.addDeck(Deck(name, subjectName))
                 showAddDeckSheet = false
             }
         )

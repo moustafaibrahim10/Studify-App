@@ -48,6 +48,9 @@ object DataRepository {
     // TASKS
     fun addTask(task: Task) {
         tasks.add(task)
+
+        getSubjectByName(task.subject)?.tasks?.add(task)
+            ?: subjects.add(Subject(task.subject, mutableStateListOf(task)))
     }
 
     fun removeTask(task: Task) {

@@ -133,6 +133,10 @@ private fun SubjectCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    val doneCount = subject?.tasks?.count { it.isDone } ?: 0
+    val total = subject?.tasks?.size ?: 0
+    subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
+
     ElevatedCard(
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
