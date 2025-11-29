@@ -236,7 +236,7 @@ fun FlashCardsSection(navController: NavController, deckCount: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { navController.navigate(routs.deckList) },
+            .clickable { navController.navigate("deckList") },
         colors = CardDefaults.cardColors(containerColor = Color(0xFFCEE1DE)),
         shape = RoundedCornerShape(16.dp)
     ) {
