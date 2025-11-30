@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.data.DataRepository
 import com.example.model.Task
+import com.example.model.Subject
 import java.net.URLEncoder
 import java.time.Instant
 import java.time.LocalDate
@@ -43,7 +44,7 @@ fun TasksScreen(
 ) {
     val currentUser = DataRepository.currentUser!!
 
-    // tasks pulled from the logged-in user only
+    // tasks pulled from all subjects belonging to logged-in user
     val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
 
     var showAddSheet by remember { mutableStateOf(false) }
@@ -95,6 +96,7 @@ fun TasksScreen(
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(Modifier.height(6.dp))
+
                     LinearProgressIndicator(
                         progress = progress,
                         color = Accent,
@@ -121,10 +123,13 @@ fun TasksScreen(
                                 val titleEncoded = URLEncoder.encode(task.title, "UTF-8")
                                 val subjectEncoded = URLEncoder.encode(task.subject, "UTF-8")
                                 val dueEncoded = URLEncoder.encode(task.due.toString(), "UTF-8")
-                                navController.navigate("taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded")
+                                navController.navigate(
+                                    "taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded"
+                                )
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Column(Modifier.weight(1f)) {
                             Text(
                                 text = task.subject,
@@ -146,7 +151,6 @@ fun TasksScreen(
                             )
                         }
 
-                        // ---- checkbox ----
                         Checkbox(
                             checked = task.isDone,
                             onCheckedChange = { checked ->
@@ -173,10 +177,21 @@ fun TasksScreen(
                         due = LocalDate.parse(deadline.trim(), DateTimeFormatter.ofPattern("MMM d, yyyy"))
                     )
 
-                    // find subject in user's subject list
-                    val subjectObj = currentUser.subjects.find { it.name == subject.trim() }
+                    // find subject
+                    val existingSubject =
+                        currentUser.subjects.find { it.name.equals(subject.trim(), ignoreCase = true) }
 
-                    subjectObj?.tasks?.add(newTask)
+                    if (existingSubject != null) {
+                        // add task to existing subject
+                        existingSubject.tasks.add(newTask)
+                    } else {
+                        // create new subject with this task
+                        val newSubject = Subject(
+                            name = subject.trim(),
+                            tasks = mutableListOf(newTask)
+                        )
+                        currentUser.subjects.add(newSubject)
+                    }
                 }
 
                 showAddSheet = false
@@ -239,7 +254,7 @@ private fun AddTaskSheet(
             OutlinedTextField(
                 value = subject,
                 onValueChange = { subject = it },
-                label = { Text("Subject (must match existing) ") },
+                label = { Text("Subject (existing or new)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -276,6 +291,7 @@ private fun AddTaskSheet(
             ) {
                 Text("Add Task", color = Color.White, fontWeight = FontWeight.SemiBold)
             }
+
             Spacer(Modifier.height(12.dp))
         }
     }

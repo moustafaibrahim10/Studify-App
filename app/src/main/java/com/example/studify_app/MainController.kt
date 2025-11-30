@@ -220,6 +220,13 @@ fun MainScaffold(
             }
             composable("flashcardsAnalytics") { flashcardsAnalytics(navController) }
             composable("statisticsScreen") { StatisticsScreen(navController) }
+            composable(
+                route = "AddFlashCard/{deckName}",
+                arguments = listOf(navArgument("deckName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val deckName = backStackEntry.arguments?.getString("deckName") ?: ""
+                AddFlashCard(navController, deckName)
+            }
 
 
             // Other screens

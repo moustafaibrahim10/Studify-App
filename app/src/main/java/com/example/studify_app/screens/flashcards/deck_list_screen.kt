@@ -33,7 +33,6 @@ fun decks_list(
     navController: NavController,
     deckclick: () -> Unit = { }
 ) {
-    // ✔ Pull decks from the currently logged-in user
     val user = DataRepository.currentUser!!
     val decks = user.decks
 
@@ -85,14 +84,36 @@ fun decks_list(
         }
     }
 
-    // ✔ Bottom sheet handles adding to user.decks
+    // UPDATED: logic for subject merging
     if (isSheetOpen) {
         AddDeckSheet(
             onDismiss = { isSheetOpen = false },
             onConfirm = { title, subject ->
-                user.decks.add(Deck(title = title, subject = subject))
+
+                if (title.isNotBlank() && subject.isNotBlank()) {
+
+                    val newDeck = Deck(
+                        title = title.trim(),
+                        subject = subject.trim(),
+                    )
+                    val existingSubject =
+                        user.decks.find { it.subject.equals(subject.trim(), ignoreCase = true) }
+
+                    if (existingSubject != null) {
+                        user.decks.add(
+                            Deck(
+                                title = newDeck.title,
+                                subject = existingSubject.subject, // keep consistent
+                            )
+                        )
+
+                    } else {
+                        user.decks.add(newDeck)
+                    }
+                }
                 isSheetOpen = false
             }
+
         )
     }
 }
