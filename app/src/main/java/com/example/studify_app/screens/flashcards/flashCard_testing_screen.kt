@@ -34,72 +34,72 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.data.DataRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun flashCard_testing_screen(
-    navController: NavController
+    navController: NavController,
+    deckname: String
+) {
+    var currentIndex by remember { mutableStateOf(0) }
+    var showQuestion by remember { mutableStateOf(true) }
 
-){
-    var isquestion = true
+    val deck = DataRepository.getDeckByTitle(deckname)
+
+    if (deck == null) {
+        Text("Deck not found")
+        return
+    }
+
+    val cards = deck.cards
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("", textAlign = TextAlign.Center) },
+                title = { Text(deckname, textAlign = TextAlign.Center) },
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         }
-    ){
-            padding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            var currentIndex by remember { mutableStateOf(0) }
-            var showQuestion by remember { mutableStateOf(true) }
+            if (currentIndex < cards.size) {
 
-            val questions = Questions()
-            val answers = Answers()
+                qNaBox(
+                    if (showQuestion) cards[currentIndex].question
+                    else cards[currentIndex].answer
+                )
 
-            if (currentIndex < questions.lastIndex) {
+                Spacer(Modifier.height(20.dp))
 
                 if (showQuestion) {
-                    qNaBox(questions[currentIndex])
-                    flipBtn({ showQuestion = false })
+                    flipBtn { showQuestion = false }
                 } else {
-                    qNaBox(answers[currentIndex])
                     rightWrongBtn(
                         onNext = {
-                            currentIndex++
                             showQuestion = true
+                            currentIndex++
                         }
                     )
                 }
-            }else{
-                navController.navigate(routs.statisticsScreen)
+
+            } else {
+                navController.navigate("flashcardsAnalytics")
             }
-
-
-
-
-
-
         }
     }
-
-
-
-
 }
 
 

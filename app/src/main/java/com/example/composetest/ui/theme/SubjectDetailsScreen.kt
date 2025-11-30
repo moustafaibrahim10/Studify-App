@@ -183,7 +183,6 @@ fun SubjectDetailsScreen(
         AddDeckSheet(
             onDismiss = { showAddDeckSheet = false },
             onConfirm = { name ->
-                DataRepository.addSubjectDeck(subject, Deck(name, subjectName))
                 DataRepository.addDeck(Deck(name, subjectName))
                 showAddDeckSheet = false
             }

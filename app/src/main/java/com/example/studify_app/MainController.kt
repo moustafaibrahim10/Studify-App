@@ -221,7 +221,13 @@ fun MainScaffold(
                 val deckName = backStackEntry.arguments?.getString("deckName") ?: ""
                 deck_details_screen(navController, deckName)
             }
-            composable("flashCardTesting") { flashCard_testing_screen(navController) }
+            composable(
+                route = "deckTesting/{deckName}",
+                arguments = listOf(navArgument("deckName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val deckName = backStackEntry.arguments?.getString("deckName") ?: ""
+                flashCard_testing_screen(navController, deckName)
+            }
             composable("flashcardsAnalytics") { flashcardsAnalytics(navController) }
             composable("statisticsScreen") { StatisticsScreen(navController) }
 

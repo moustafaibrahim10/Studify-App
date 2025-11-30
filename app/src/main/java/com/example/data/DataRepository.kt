@@ -3,6 +3,7 @@ package com.example.data
 import androidx.compose.runtime.mutableStateListOf
 import com.example.model.Subject
 import com.example.model.Deck
+import com.example.model.Flashcard
 import com.example.model.Task
 
 object DataRepository {
@@ -35,6 +36,10 @@ object DataRepository {
     // DECKS
     fun addDeck(deck: Deck) {
         decks.add(deck)
+
+        getSubjectByName(deck.subject)?.decks?.add(deck)
+            ?: subjects.add(Subject(deck.subject, decks=mutableStateListOf(deck)))
+
     }
 
     fun removeDeck(deck: Deck) {
@@ -56,4 +61,10 @@ object DataRepository {
     fun removeTask(task: Task) {
         tasks.remove(task)
     }
+
+    fun addFlashcardToDeck(deckName: String, question: String, answer: String) {
+        val deck = getDeckByTitle(deckName)
+        deck?.cards?.add(Flashcard(question, answer))
+    }
+
 }
