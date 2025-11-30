@@ -1,9 +1,11 @@
 package com.example.studify_app
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,11 +39,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.data.DataRepository
 
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfilePic(navController: NavHostController){
+    val currentUser = DataRepository.currentUser!!
+    val tasks = currentUser.tasks
+
+    val total = tasks.size
+    val completed = tasks.count { it.isDone }
+
+    val assignmentsProgress =
+        if (total == 0) 0f else completed.toFloat() / total
+
+
     Column (
         modifier = Modifier.fillMaxWidth().background(Color.White)
         ,horizontalAlignment = Alignment.CenterHorizontally
@@ -87,7 +100,7 @@ fun ProfilePic(navController: NavHostController){
         Spacer(modifier = Modifier.height(10.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.avataric),
+            painter = painterResource(id = R.drawable.profileowl),
             contentDescription = "Profile Pic",
             modifier = Modifier.size(128.dp).clip(CircleShape)
         )
@@ -95,29 +108,13 @@ fun ProfilePic(navController: NavHostController){
         Spacer(modifier = Modifier.height(28.dp))
 
         Text(
-            text = "Sophia Carter",
+            text = currentUser.username,
             fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
             fontSize = 22.sp,
             color = Color(0XFF000000)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "Student",
-            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)),
-            fontSize = 16.sp,
-            color = Color(0xFF4D9987)
-        )
-
-        Spacer(modifier = Modifier.height(7.dp))
-
-        Text(
-            text = "Joined in 2023",
-            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)),
-            fontSize = 16.sp,
-            color = Color(0xFF4D9987)
-        )
 
         Column(
             modifier = Modifier
@@ -144,7 +141,7 @@ fun ProfilePic(navController: NavHostController){
                 icon = R.drawable.assic,
                 title = "Assignments",
                 description = "Finish 50% of the assignments",
-                progress = 0.3f
+                progress = assignmentsProgress
             )
 
         }

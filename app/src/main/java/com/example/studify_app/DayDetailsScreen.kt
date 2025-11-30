@@ -90,7 +90,7 @@ fun DayDetailsScreen(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                     }
                 }
             )

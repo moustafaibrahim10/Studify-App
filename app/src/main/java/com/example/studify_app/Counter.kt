@@ -39,7 +39,7 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
             }
         }
         if (timeLeft == 0) {
-            navController.navigate("SessionComplete") {
+            navController.navigate("Pomodoro") {
                 popUpTo("Pomodoro") { inclusive = false }
             }
         }

@@ -1,5 +1,7 @@
 package com.example.studify_app
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.material3.TextFieldDefaults
@@ -43,22 +45,32 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.data.DataRepository
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditScr(navController: NavController) {
 
-    val scrollState = rememberScrollState()
+    val user = DataRepository.currentUser!!
 
-    val Nameinputvalue = remember { mutableStateOf(TextFieldValue()) }
-    val Usnameinputvalue = remember { mutableStateOf(TextFieldValue()) }
-    val Emailinputvalue = remember { mutableStateOf(TextFieldValue()) }
-    val Bioinputvalue = remember { mutableStateOf(TextFieldValue()) }
-    val Majorinputvalue = remember { mutableStateOf(TextFieldValue()) }
+    // Default values from user
+    var username by remember { mutableStateOf(user?.username ?: "") }
+    var email by remember { mutableStateOf(user?.email ?: "") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
-    Column (
-        modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).padding(bottom = 12.dp)
-        ,horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        // Top bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,12 +81,9 @@ fun EditScr(navController: NavController) {
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Edit",
-                    tint = Color.Black
-                )
+                Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Black)
             }
+
             Text(
                 text = "Edit Profile",
                 fontSize = 20.sp,
@@ -87,8 +96,9 @@ fun EditScr(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Profile Picture
         Image(
-            painter = painterResource(id = R.drawable.proficcc),
+            painter = painterResource(id = R.drawable.profileowl),
             contentDescription = "Profile Pic",
             modifier = Modifier.size(128.dp).clip(CircleShape)
         )
@@ -96,175 +106,132 @@ fun EditScr(navController: NavController) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Sophia Carter",
+            text = user?.username ?: "",
             fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
             fontSize = 22.sp,
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = "@sophia.carter",
-            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)),
-            fontSize = 16.sp,
-            color = Color(0xFF4D9987)
-        )
+        // Username
+        LabeledField("Username", username) { username = it }
 
-        Spacer(modifier = Modifier.height(15.dp))
+        // Email
+        LabeledField("Email", email) { email = it }
 
-        Column(
-            horizontalAlignment = Alignment.Start
+        // New Password
+        LabeledField("New Password (optional)", password, isPassword = true) { password = it }
+
+        // Confirm Password
+        LabeledField("Confirm Password", confirmPassword, isPassword = true) { confirmPassword = it }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Error message
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+
+        // Success msg
+        successMessage?.let {
+            Text(
+                text = it,
+                color = Color(0xFF4CAF50),
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+
+        // Save button
+        Button(
+            onClick = {
+
+                // Validate email
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    errorMessage = "Please enter a valid email."
+                    return@Button
+                }
+
+                // Validate password match (only if password is written)
+                if (password.isNotEmpty() && password != confirmPassword) {
+                    errorMessage = "Passwords do not match."
+                    return@Button
+                }
+
+                errorMessage = null
+
+                // Update user info
+                user.let {
+                    it.username = username
+                    it.email = email
+                    if (password.isNotEmpty()) {
+                        it.password = password
+                    }
+                }
+
+                successMessage = "Profile updated successfully!"
+
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF66BB6A),
+                contentColor = Color.White
+            )
         ) {
             Text(
-                text = "Name",
-                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp )
-                )
-            TextField(
-                value = Nameinputvalue.value,
-                onValueChange = { Nameinputvalue.value = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 5.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black,
-                    focusedContainerColor = Color(0xFFE8F2F0),
-                    unfocusedContainerColor = Color(0xFFE8F2F0),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
+                text = "Save Changes",
+                color = Color.Black,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
             )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = "Username",
-                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp )
-            )
-            TextField(
-                value = Usnameinputvalue.value,
-                onValueChange = { Usnameinputvalue.value = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black,
-                    focusedContainerColor = Color(0xFFE8F2F0),
-                    unfocusedContainerColor = Color(0xFFE8F2F0),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = "Email",
-                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp )
-            )
-            TextField(
-                value = Emailinputvalue.value,
-                onValueChange = { Emailinputvalue.value = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 5.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black,
-                    focusedContainerColor = Color(0xFFE8F2F0),
-                    unfocusedContainerColor = Color(0xFFE8F2F0),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = "Bio",
-                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp )
-            )
-            TextField(
-                value = Bioinputvalue.value,
-                onValueChange = { Bioinputvalue.value = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 5.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black,
-                    focusedContainerColor = Color(0xFFE8F2F0),
-                    unfocusedContainerColor = Color(0xFFE8F2F0),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = "Major",
-                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp )
-            )
-            TextField(
-                value = Majorinputvalue.value,
-                onValueChange = { Majorinputvalue.value = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 5.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black,
-                    focusedContainerColor = Color(0xFFE8F2F0),
-                    unfocusedContainerColor = Color(0xFFE8F2F0),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp).padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF66BB6A),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFFE8F5E9),
-                    disabledContentColor = Color(0xFFB0BEC5)
-                )
-            ) {
-                Text(
-                    text = "Save Changes",
-                    color = Color.Black,
-                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-            }
         }
     }
 }
 
+@Composable
+fun LabeledField(
+    label: String,
+    value: String,
+    isPassword: Boolean = false,
+    onValueChange: (String) -> Unit
+) {
+    Text(
+        text = label,
+        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+        fontSize = 16.sp,
+        modifier = Modifier.padding(horizontal = 24.dp)
+    )
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 5.dp),
+        singleLine = true,
+        shape = RoundedCornerShape(10.dp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text
+        ),
+        colors = TextFieldDefaults.colors(
+            cursorColor = Color.Black,
+            focusedContainerColor = Color(0xFFE8F2F0),
+            unfocusedContainerColor = Color(0xFFE8F2F0),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
+}
 
 

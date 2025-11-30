@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import java.time.LocalDate
 
 data class User(
-    val username: String,
-    val email: String,
+    var username: String,
+    var email: String,
     var password: String,
     val subjects: MutableList<Subject> = mutableStateListOf(),
     val tasks: MutableList<Task> = mutableStateListOf(),
