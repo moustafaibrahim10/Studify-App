@@ -6,6 +6,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import java.time.LocalDate
 
+data class User(
+    var username: String,
+    var email: String,
+    var password: String,
+    val subjects: MutableList<Subject> = mutableStateListOf(),
+    val tasks: MutableList<Task> = mutableStateListOf(),
+    val decks: MutableList<Deck> = mutableStateListOf()
+)
+
+
+
+
+
 //Subjects Model
 data class Subject(
     val name: String,

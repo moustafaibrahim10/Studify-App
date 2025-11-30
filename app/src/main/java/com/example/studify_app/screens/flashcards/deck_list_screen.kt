@@ -1,44 +1,19 @@
 package com.example.finalfinalefinal
 
-
-
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,24 +26,32 @@ import com.example.model.Deck
 
 private val Accent = Color(0xFF2F7D66)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun decks_list(
     navController: NavController,
     deckclick: () -> Unit = { }
 ) {
-    val decks = DataRepository.decks
+    val user = DataRepository.currentUser!!
+    val decks = user.decks
 
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
-    var newDeckName by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Flashcards", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center) },
+                title = {
+                    Text(
+                        "My Flashcards",
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -87,30 +70,56 @@ fun decks_list(
             Text("Decks", fontWeight = FontWeight.Bold, fontSize = 20.sp)
 
             Spacer(Modifier.height(12.dp))
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(decks){ deck ->
-                    deckshape(deck = deck, deckclick = { navController.navigate("deckDetails/${deck.title}")})
+                items(decks) { deck ->
+                    deckshape(deck = deck) {
+                        navController.navigate("deckDetails/${deck.title}")
+                    }
                 }
             }
         }
     }
 
+    // UPDATED: logic for subject merging
     if (isSheetOpen) {
         AddDeckSheet(
             onDismiss = { isSheetOpen = false },
             onConfirm = { title, subject ->
-                DataRepository.addDeck(Deck(title = title, subject = subject))
+
+                if (title.isNotBlank() && subject.isNotBlank()) {
+
+                    val newDeck = Deck(
+                        title = title.trim(),
+                        subject = subject.trim(),
+                    )
+                    val existingSubject =
+                        user.decks.find { it.subject.equals(subject.trim(), ignoreCase = true) }
+
+                    if (existingSubject != null) {
+                        user.decks.add(
+                            Deck(
+                                title = newDeck.title,
+                                subject = existingSubject.subject, // keep consistent
+                            )
+                        )
+
+                    } else {
+                        user.decks.add(newDeck)
+                    }
+                }
                 isSheetOpen = false
             }
+
         )
     }
 }
 
 @Composable
-fun deckshape(deck: Deck, deckclick: () -> Unit){
+fun deckshape(deck: Deck, deckclick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,8 +127,7 @@ fun deckshape(deck: Deck, deckclick: () -> Unit){
             .clickable { deckclick() }
             .padding(16.dp)
             .height(60.dp)
-
-    ){
+    ) {
         Column {
             Text(
                 text = deck.subject,
@@ -129,10 +137,9 @@ fun deckshape(deck: Deck, deckclick: () -> Unit){
             )
             Text(text = deck.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(Modifier.height(4.dp))
-            Text(text = "10 flashcards", color = Color(0xFF67C090))
+            Text(text = "${deck.cards.size} flashcards", color = Color(0xFF67C090))
         }
     }
-
 }
 
 @Composable
@@ -142,7 +149,7 @@ fun adddeckbtn(adddeckclick: () -> Unit) {
             .fillMaxWidth()
             .padding(16.dp),
         contentAlignment = Alignment.CenterEnd
-    ){
+    ) {
         Button(
             onClick = adddeckclick,
             shape = RoundedCornerShape(12.dp),
@@ -151,11 +158,9 @@ fun adddeckbtn(adddeckclick: () -> Unit) {
             Icon(Icons.Default.Add, contentDescription = "ADD DECK")
             Spacer(Modifier.width(8.dp))
             Text("Add New Deck", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp))
-
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,8 +178,6 @@ fun AddDeckSheet(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
-            // Header with Cancel button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -187,7 +190,6 @@ fun AddDeckSheet(
                 Spacer(Modifier.size(40.dp))
             }
 
-            // Deck Title
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -196,7 +198,6 @@ fun AddDeckSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Subject Name
             OutlinedTextField(
                 value = subject,
                 onValueChange = { subject = it },
@@ -205,7 +206,6 @@ fun AddDeckSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Confirm Button
             Button(
                 onClick = { onConfirm(title, subject) },
                 enabled = title.isNotBlank() && subject.isNotBlank(),
@@ -221,120 +221,3 @@ fun AddDeckSheet(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//fun historyQuestions(): List<String>{
-//    return listOf(
-//        "History Q1",
-//        "History Q2",
-//        "History Q3",
-//        "History Q4",
-//        "History Q5"
-//
-//    )
-//}
-//fun historyAnswers(): List<String>{
-//    return listOf(
-//        "History A1",
-//        "History A2",
-//        "History A3",
-//        "History A4",
-//        "History A5"
-//
-//    )
-//}
-//
-//
-//
-//fun PhysicsQuestions(): List<String>{
-//    return listOf(
-//        "Physics Q1",
-//        "Physics Q2",
-//        "Physics Q3",
-//        "Physics Q4",
-//        "Physics Q5",
-//        "Physics Q6",
-//        "Physics Q7",
-//        "Physics Q8"
-//
-//    )
-//}
-//fun PhysicsAnswers(): List<String>{
-//    return listOf(
-//        "Physics A1",
-//        "Physics A2",
-//        "Physics A3",
-//        "Physics A4",
-//        "Physics A5",
-//        "Physics A6",
-//        "Physics A7",
-//        "Physics A8"
-//
-//    )
-//}
-//
-//
-//
-//
-//fun chimestryQuestions(): List<String>{
-//    return listOf(
-//        "chimestry Q1",
-//        "chimestry Q2",
-//    )
-//}
-//fun chimestryAnswers(): List<String>{
-//    return listOf(
-//        "chimestry A1",
-//        "chimestry A2",
-//    )
-//}
-//
-//
-//
-//fun BiologyQuestions(): List<String>{
-//    return listOf(
-//        "Biology Q1",
-//        "Biology Q2",
-//        "Biology Q3",
-//        "Biology Q4",
-//        "Biology Q5",
-//        "Biology Q6",
-//        "Biology Q7",
-//        "Biology Q8",
-//        "Biology Q9",
-//        "Biology Q10",
-//        "Biology Q11",
-//        "Biology Q12"
-//    )
-//}
-//fun BiologyAnswers(): List<String>{
-//    return listOf(
-//        "Biology A1",
-//        "Biology A2",
-//        "Biology A3",
-//        "Biology A4",
-//        "Biology A5",
-//        "Biology A6",
-//        "Biology A7",
-//        "Biology A8",
-//        "Biology A9",
-//        "Biology A10",
-//        "Biology A11",
-//        "Biology A12"
-//    )
-//}

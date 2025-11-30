@@ -4,8 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,44 +21,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.data.DataRepository
-import com.example.model.Subject
 import com.example.model.Task
+import com.example.model.Subject
 import java.net.URLEncoder
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// --- Data Class ---
-data class TaskUi(
-    val subject: String,
-    val title: String,
-    val due: String
-)
-
-// --- Colors ---
+// ---- UI colors ----
 private val ScreenBg = Color(0xFFF9F9F9)
 private val Accent = Color(0xFF2F7D66)
-private val Mint = Color(0xFFE5F4EF)
 private val MintButton = Color(0xFF67C090)
 
-// --- Main Screen ---
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(
     navController: NavHostController
 ) {
-    val tasks = DataRepository.tasks // Already a mutableStateListOf from repository
+    val currentUser = DataRepository.currentUser!!
+
+    // tasks pulled from all subjects belonging to logged-in user
+    val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
+
     var showAddSheet by remember { mutableStateOf(false) }
 
-    // --- Progress Calculation ---
-    val totalTasks = tasks.size
-    val completedTasks = tasks.count { it.isDone }
-    var progress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
+    // progress
+    val totalTasks = tasks.value.size
+    val completedTasks = tasks.value.count { it.isDone }
+    val progress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
 
     Scaffold(
         topBar = {
@@ -92,15 +84,19 @@ fun TasksScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
 
-            // --- Progress Bar Block ---
+            // ---- Progress Block ----
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("$completedTasks out of $totalTasks completed", fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "$completedTasks out of $totalTasks completed",
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Spacer(Modifier.height(6.dp))
+
                     LinearProgressIndicator(
                         progress = progress,
                         color = Accent,
@@ -115,9 +111,9 @@ fun TasksScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // --- Task List ---
+            // ---- Task list ----
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(tasks) { task ->
+                items(tasks.value) { task ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -127,10 +123,13 @@ fun TasksScreen(
                                 val titleEncoded = URLEncoder.encode(task.title, "UTF-8")
                                 val subjectEncoded = URLEncoder.encode(task.subject, "UTF-8")
                                 val dueEncoded = URLEncoder.encode(task.due.toString(), "UTF-8")
-                                navController.navigate("taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded")
+                                navController.navigate(
+                                    "taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded"
+                                )
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Column(Modifier.weight(1f)) {
                             Text(
                                 text = task.subject,
@@ -152,17 +151,10 @@ fun TasksScreen(
                             )
                         }
 
-                        // --- Checkbox for Completion ---
                         Checkbox(
                             checked = task.isDone,
                             onCheckedChange = { checked ->
                                 task.isDone = checked
-
-                                val doneCount = tasks.count { it.isDone } ?: 0
-                                val total = tasks.size ?: 0
-                                progress = (if (total > 0) (doneCount * 100 / total) else 0).toFloat()
-
-
                             }
                         )
                     }
@@ -171,28 +163,44 @@ fun TasksScreen(
         }
     }
 
-    // --- Bottom Sheet for Adding Tasks ---
+    // ---- Add task modal ----
     if (showAddSheet) {
         AddTaskSheet(
             onDismiss = { showAddSheet = false },
             onConfirm = { title, subject, deadline ->
-                if (title.isNotBlank() && subject.isNotBlank()) {
+
+                if (title.isNotBlank() && subject.isNotBlank() && deadline.isNotBlank()) {
+
                     val newTask = Task(
                         subject = subject.trim(),
                         title = title.trim(),
                         due = LocalDate.parse(deadline.trim(), DateTimeFormatter.ofPattern("MMM d, yyyy"))
                     )
 
-                    DataRepository.addTask(newTask)
+                    // find subject
+                    val existingSubject =
+                        currentUser.subjects.find { it.name.equals(subject.trim(), ignoreCase = true) }
 
+                    if (existingSubject != null) {
+                        // add task to existing subject
+                        existingSubject.tasks.add(newTask)
+                    } else {
+                        // create new subject with this task
+                        val newSubject = Subject(
+                            name = subject.trim(),
+                            tasks = mutableListOf(newTask)
+                        )
+                        currentUser.subjects.add(newSubject)
+                    }
                 }
+
                 showAddSheet = false
             }
         )
     }
 }
 
-// --- Add Task Sheet ---
+// ---- Add Task Sheet ----
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -242,10 +250,11 @@ private fun AddTaskSheet(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
             OutlinedTextField(
                 value = subject,
                 onValueChange = { subject = it },
-                label = { Text("Subject") },
+                label = { Text("Subject (existing or new)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -282,6 +291,7 @@ private fun AddTaskSheet(
             ) {
                 Text("Add Task", color = Color.White, fontWeight = FontWeight.SemiBold)
             }
+
             Spacer(Modifier.height(12.dp))
         }
     }

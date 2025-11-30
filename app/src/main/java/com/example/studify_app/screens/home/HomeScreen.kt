@@ -1,5 +1,7 @@
 package com.example.studify_app.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,42 +28,46 @@ import com.example.studify_app.R
 import com.example.finalfinalefinal.routs
 import com.example.model.Task
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavController) {
 
-    val tasks = DataRepository.tasks
-    val decks = DataRepository.decks
+    val currentUser = DataRepository.currentUser
+    val tasks = currentUser?.tasks ?: emptyList()
+    val decks = currentUser?.decks ?: emptyList()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        item { HeaderSection()
+        item {
+            HeaderSection()
             Spacer(modifier = Modifier.height(24.dp))
         }
-        item { GreetingSection()
+        item {
+            GreetingSection(currentUser?.username ?: "Student")
             Spacer(modifier = Modifier.height(24.dp))
         }
-        item { ActionButtonsSection(navController)
+        item {
+            ActionButtonsSection(navController)
             Spacer(modifier = Modifier.height(24.dp))
         }
 
         item {
-            GoalsCard(navController, tasks) // <-- Pass tasks
+            GoalsCard(navController, tasks)
             Spacer(modifier = Modifier.height(24.dp))
-
         }
 
         item {
-            FlashCardsSection(navController, decks.size)  // <-- Pass deck count
+            FlashCardsSection(navController, decks.size)
             Spacer(modifier = Modifier.height(24.dp))
-
         }
 
         item { ProgressSection(navController) }
     }
 }
+
 @Composable
 fun HeaderSection() {
     Row(
@@ -79,12 +85,10 @@ fun HeaderSection() {
 
     }
 }
-
 @Composable
-fun GreetingSection() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun GreetingSection(userName: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
         Image(
             painter = painterResource(id = R.drawable.owl_home),
             contentDescription = "Owl",
@@ -95,7 +99,7 @@ fun GreetingSection() {
         )
 
         Text(
-            text = "Hi, Sophia!",
+            text = "Hi, $userName!",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1E1E1E)
@@ -139,11 +143,10 @@ fun ActionButtonsSection(navController: NavController) {
         }
     }
 }
-
 @Composable
 fun GoalsCard(navController: NavController, tasks: List<Task>) {
 
-    val nextTask = tasks.firstOrNull()   // Get first task if exists
+    val nextTask = tasks.firstOrNull()
 
     Card(
         modifier = Modifier
@@ -152,7 +155,6 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFFCEE1DE)),
         shape = RoundedCornerShape(16.dp)
     ) {
-
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = "Next Task",
@@ -164,17 +166,9 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
             Spacer(modifier = Modifier.height(12.dp))
 
             if (nextTask != null) {
-                Text(
-                    text = nextTask.title,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
-                )
+                Text(nextTask.title, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = nextTask.due.toString(),
-                    fontSize = 14.sp,
-                    color = Color(0xFF666666)
-                )
+                Text(nextTask.due.toString(), fontSize = 14.sp, color = Color(0xFF666666))
             } else {
                 Text("No tasks added", fontSize = 14.sp, color = Color.Gray)
             }

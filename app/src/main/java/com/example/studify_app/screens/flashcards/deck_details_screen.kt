@@ -1,5 +1,7 @@
 package com.example.finalfinalefinal
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,58 +45,49 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun deck_details_screen(
     navController: NavController,
     deckName: String,
-    onstartreviewClick: () -> Unit={navController.navigate("deckTesting/${deckName}")}
-){
-//    var isAddFlashcardDialogOpen by rememberSaveable { mutableStateOf(false) }
-
-    val deck = DataRepository.getDeckByTitle(deckName) ?: return Text("Deck not found")
-    var isAddSheetOpen by rememberSaveable { mutableStateOf(false) }
-
-
-//    addFlashcarDialog(
-//        frontSide = frontSide,
-//        onFrontSideChange = {frontSide=it},
-//        backSide = backSide,
-//        onBackSideChange = {backSide = it},
-//        tag = tag,
-//        onTagChange = {tag = it},
-//        onDismiss = {isAddFlashcardDialogOpen=false},
-//        onConfirm = {isAddFlashcardDialogOpen=false},
-//        isOpen = isAddFlashcardDialogOpen
-//    )
+    onstartreviewClick: () -> Unit = { navController.navigate("deckTesting/$deckName") }
+) {
+    val deck = DataRepository.getDeckByTitle(deckName)
+        ?: return Text("Deck not found")
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(deckName, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                title = {
+                    Text(
+                        deckName,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         },
         bottomBar = {
-            Column (
-                modifier = Modifier.fillMaxWidth().padding(5.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
-
-            ){
+            ) {
                 startreviewBtn(onstartreviewClick)
                 addflashcardBtn {
-                    isAddSheetOpen = true
+                    navController.navigate("AddFlashCard/$deckName")
                 }
-
             }
         }
-    ){
-            padding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,28 +96,17 @@ fun deck_details_screen(
         ) {
 
             Spacer(Modifier.height(12.dp))
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(deck.cards){card->
+                items(deck.cards) { card ->
                     question_form(card.question)
                 }
-
-
             }
         }
     }
-    if (isAddSheetOpen) {
-        AddFlashcardSheet(
-            onDismiss = { isAddSheetOpen = false },
-            onConfirm = { question, answer ->
-                DataRepository.addFlashcardToDeck(deckName, question, answer)
-                isAddSheetOpen = false
-            }
-        )
-    }
-
 }
 
 

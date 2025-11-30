@@ -130,7 +130,7 @@ fun CompleteSessionScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { navController.navigate(routs.deckList) },
+                onClick = { navController.navigate("deckList") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
