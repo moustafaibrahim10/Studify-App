@@ -18,7 +18,7 @@ import com.example.studify_app.screens.onboarding.introFlashcards
 fun AppNav(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "welcomeScreen"
+        startDestination = "home"
     ) {
         composable("welcomeScreen") {
             WelcomeScreen(onGetStartedClick = { navController.navigate("introTasks") })

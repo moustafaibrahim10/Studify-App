@@ -1,8 +1,10 @@
 package com.example.studify_app
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -44,6 +46,7 @@ import com.example.studify_app.screens.onboarding.introPomodoro
 import com.example.studify_app.screens.onboarding.introTasks
 
 class MainController : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,7 +84,6 @@ class MainController : ComponentActivity() {
                         SubjectTaskUi("Biology", "Genetics", false)
                     )
                 }
-
                 MainScaffold(
                     navController = navController,
                     subjects = subjects,
@@ -89,11 +91,13 @@ class MainController : ComponentActivity() {
                     decks = decks,
                     subTasks = tasksSubjects
                 )
+
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScaffold(
     navController: NavHostController,
@@ -162,15 +166,15 @@ fun MainScaffold(
             composable("tasks") {
                 TasksScreen(
                     navController = navController,
-                    tasks = tasks,
-                    onAddTask = { /* handled inside TasksScreen */ }
                 )
             }
 
             composable("subjects") {
                 SubjectsScreen(
-                    subjects = subjects,
-                    onSubjectClick = { s -> navController.navigate("subject/${s.name}") }
+                    navController = navController,
+                    onSubjectClick = { s ->
+                        navController.navigate("subject/${s.name}")
+                    }
                 )
             }
 
@@ -179,14 +183,9 @@ fun MainScaffold(
                 arguments = listOf(navArgument("name") { type = NavType.StringType })
             ) { backStackEntry ->
                 val name = backStackEntry.arguments?.getString("name") ?: ""
-                val progress = subjects.find { it.name == name }?.progress ?: 0
-
                 SubjectDetailsScreen(
-                    navController,
+                    navController = navController,
                     subjectName = name,
-                    initialProgress = progress,
-                    initialTasks = subTasks,
-                    initialDecks = decks,
                     onBack = { navController.popBackStack() },
                     onStartPomodoro = { navController.navigate("pomodoro") },
                 )
@@ -209,20 +208,29 @@ fun MainScaffold(
                     subject = subject,
                     due = due,
                     onBackToTasks = { navController.popBackStack() },
-                    onMarkComplete = {
-                        // حذف المهمة من قائمة Tasks الأصلية
-                        tasks.removeAll { it.title == title && it.due == due }
-                        navController.popBackStack()
-                    }
+
                 )
             }
 
             // Decks & Flashcards
-            composable(routs.deckList) { decks_list(navController) }
-            composable(route = routs.deckDetails) { deck_details_screen(navController) }
-            composable(routs.flashCardTesting) { flashCard_testing_screen(navController) }
-            composable(routs.flashcardsAnalytics) { flashcardsAnalytics(navController) }
-            composable(routs.statisticsScreen) { StatisticsScreen(navController) }
+            composable("deckList") { decks_list(navController) }
+            composable(
+                route = "deckDetails/{deckName}",
+                arguments = listOf(navArgument("deckName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val deckName = backStackEntry.arguments?.getString("deckName") ?: ""
+                deck_details_screen(navController, deckName)
+            }
+            composable(
+                route = "deckTesting/{deckName}",
+                arguments = listOf(navArgument("deckName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val deckName = backStackEntry.arguments?.getString("deckName") ?: ""
+                flashCard_testing_screen(navController, deckName)
+            }
+            composable("flashcardsAnalytics") { flashcardsAnalytics(navController) }
+            composable("statisticsScreen") { StatisticsScreen(navController) }
+
 
             // Other screens
             composable("calendar") { /* TODO */ }

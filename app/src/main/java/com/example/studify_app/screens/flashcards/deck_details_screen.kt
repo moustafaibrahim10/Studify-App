@@ -3,6 +3,7 @@ package com.example.finalfinalefinal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,19 +41,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
+import com.example.data.DataRepository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun deck_details_screen(
     navController: NavController,
-    onstartreviewClick: () -> Unit={navController.navigate(routs.flashCardTesting)}
+    deckName: String,
+    onstartreviewClick: () -> Unit={navController.navigate("deckTesting/${deckName}")}
 ){
 //    var isAddFlashcardDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var frontSide by remember { mutableStateOf("") }
-    var backSide by remember { mutableStateOf("") }
-    var tag by remember { mutableStateOf("") }
+
+    val deck = DataRepository.getDeckByTitle(deckName) ?: return Text("Deck not found")
+    var isAddSheetOpen by rememberSaveable { mutableStateOf(false) }
+
 
 //    addFlashcarDialog(
 //        frontSide = frontSide,
@@ -65,7 +72,7 @@ fun deck_details_screen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Deck Details", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                title = { Text(deckName, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                 navigationIcon = {
                     IconButton(onClick = {navController.popBackStack()}) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
@@ -81,7 +88,7 @@ fun deck_details_screen(
             ){
                 startreviewBtn(onstartreviewClick)
                 addflashcardBtn {
-                    navController.navigate(routs.addFlashCard)
+                    isAddSheetOpen = true
                 }
 
             }
@@ -100,14 +107,24 @@ fun deck_details_screen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(Questionsdt()){question->
-                    question_form(question)
+                items(deck.cards){card->
+                    question_form(card.question)
                 }
 
 
             }
         }
     }
+    if (isAddSheetOpen) {
+        AddFlashcardSheet(
+            onDismiss = { isAddSheetOpen = false },
+            onConfirm = { question, answer ->
+                DataRepository.addFlashcardToDeck(deckName, question, answer)
+                isAddSheetOpen = false
+            }
+        )
+    }
+
 }
 
 
@@ -163,6 +180,63 @@ fun addflashcardBtn(onaddflashcardClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddFlashcardSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (question: String, answer: String) -> Unit
+) {
+    var question by remember { mutableStateOf("") }
+    var answer by remember { mutableStateOf("") }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text("Add Flashcard", style = MaterialTheme.typography.titleMedium)
+
+            OutlinedTextField(
+                value = question,
+                onValueChange = { question = it },
+                label = { Text("Question") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = answer,
+                onValueChange = { answer = it },
+                label = { Text("Answer") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Cancel")
+                }
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = { onConfirm(question, answer) },
+                    enabled = question.isNotBlank() && answer.isNotBlank(),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add")
+                }
+            }
+        }
+    }
+}
 
 
 

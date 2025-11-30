@@ -18,11 +18,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.data.DataRepository
+import com.example.model.Subject
+import com.example.model.Task
 import java.net.URLEncoder
 import java.time.Instant
 import java.time.LocalDate
@@ -47,25 +52,15 @@ private val MintButton = Color(0xFF67C090)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(
-    navController: NavController,
-    tasks: List<TaskUi>,
-    onAddTask: () -> Unit = {}
+    navController: NavHostController
 ) {
-    val items = remember { mutableStateListOf<TaskUi>().also { it.addAll(tasks) } }
+    val tasks = DataRepository.tasks // Already a mutableStateListOf from repository
     var showAddSheet by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("All") } // All, Today, By Subject
 
-    val filteredTasks = remember(selectedFilter, items.toList()) {
-        when (selectedFilter) {
-            "Today" -> {
-                // التأكد من تنسيق تاريخ اليوم ليطابق التنسيق المحفوظ (مثال: Nov 28)
-                val todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM d"))
-                items.filter { it.due.contains(todayStr) }
-            }
-            "By Subject" -> items.sortedBy { it.subject }
-            else -> items
-        }
-    }
+    // --- Progress Calculation ---
+    val totalTasks = tasks.size
+    val completedTasks = tasks.count { it.isDone }
+    var progress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
 
     Scaffold(
         topBar = {
@@ -96,64 +91,47 @@ fun TasksScreen(
                 .background(ScreenBg)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // شريط الفلاتر
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+
+            // --- Progress Bar Block ---
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                AppFilterChip("All", selectedFilter == "All") { selectedFilter = "All" }
-                AppFilterChip("Today", selectedFilter == "Today") { selectedFilter = "Today" }
-                AppFilterChip("By Subject", selectedFilter == "By Subject") { selectedFilter = "By Subject" }
+                Column(Modifier.padding(16.dp)) {
+                    Text("$completedTasks out of $totalTasks completed", fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(6.dp))
+                    LinearProgressIndicator(
+                        progress = progress,
+                        color = Accent,
+                        trackColor = Color(0xFFE8EEF0),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                    )
+                }
             }
 
             Spacer(Modifier.height(12.dp))
 
-            // قائمة المهام
+            // --- Task List ---
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (filteredTasks.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                Text(
-                                    text = when (selectedFilter) {
-                                        "Today" -> "No tasks for today 🎯"
-                                        "By Subject" -> "No tasks available"
-                                        else -> "No tasks available"
-                                    },
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    items(filteredTasks) { task ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.White, RoundedCornerShape(10.dp))
-                                .padding(12.dp)
-                                .clickable {
-                                    // التنقل للتفاصيل (تأكد من وجود الـ Route هذا في الـ NavHost الخاص بك)
-                                    val encodedTitle = URLEncoder.encode(task.title, "UTF-8")
-                                    val encodedSubject = URLEncoder.encode(task.subject, "UTF-8")
-                                    val encodedDue = URLEncoder.encode(task.due, "UTF-8")
-                                    navController.navigate("taskDetail/$encodedTitle/$encodedSubject/$encodedDue")
-                                }
-                        ) {
+                items(tasks) { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White, RoundedCornerShape(10.dp))
+                            .padding(12.dp)
+                            .clickable {
+                                val titleEncoded = URLEncoder.encode(task.title, "UTF-8")
+                                val subjectEncoded = URLEncoder.encode(task.subject, "UTF-8")
+                                val dueEncoded = URLEncoder.encode(task.due.toString(), "UTF-8")
+                                navController.navigate("taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded")
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f)) {
                             Text(
                                 text = task.subject,
                                 color = Accent,
@@ -167,24 +145,46 @@ fun TasksScreen(
                                 modifier = Modifier.padding(top = 2.dp)
                             )
                             Text(
-                                text = task.due,
+                                text = task.due.toString(),
                                 color = Color(0xFF4CAF50),
                                 fontSize = 13.sp,
                                 modifier = Modifier.padding(top = 2.dp)
                             )
                         }
+
+                        // --- Checkbox for Completion ---
+                        Checkbox(
+                            checked = task.isDone,
+                            onCheckedChange = { checked ->
+                                task.isDone = checked
+
+                                val doneCount = tasks.count { it.isDone } ?: 0
+                                val total = tasks.size ?: 0
+                                progress = (if (total > 0) (doneCount * 100 / total) else 0).toFloat()
+
+
+                            }
+                        )
                     }
                 }
             }
         }
     }
 
+    // --- Bottom Sheet for Adding Tasks ---
     if (showAddSheet) {
         AddTaskSheet(
             onDismiss = { showAddSheet = false },
             onConfirm = { title, subject, deadline ->
                 if (title.isNotBlank() && subject.isNotBlank()) {
-                    items.add(TaskUi(subject = subject.trim(), title = title.trim(), due = deadline.trim()))
+                    val newTask = Task(
+                        subject = subject.trim(),
+                        title = title.trim(),
+                        due = LocalDate.parse(deadline.trim(), DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                    )
+
+                    DataRepository.addTask(newTask)
+
                 }
                 showAddSheet = false
             }
@@ -192,28 +192,7 @@ fun TasksScreen(
     }
 }
 
-@Composable
-private fun AppFilterChip(text: String, selected: Boolean, onClick: () -> Unit) {
-    Surface(
-        color = if (selected) Mint else Color.White,
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 1.dp,
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Box(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = text,
-                fontSize = 13.sp,
-                color = if (selected) Accent else Color.Gray
-            )
-        }
-    }
-}
-
-// --- Add Task Sheet with Date Picker ---
+// --- Add Task Sheet ---
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -227,7 +206,6 @@ private fun AddTaskSheet(
     var subject by remember { mutableStateOf("") }
     var deadline by remember { mutableStateOf("") }
 
-    // Date Picker States
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
@@ -240,11 +218,11 @@ private fun AddTaskSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .navigationBarsPadding() // عشان الكيبورد
+                .navigationBarsPadding()
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -254,10 +232,9 @@ private fun AddTaskSheet(
                     Icon(Icons.Outlined.Close, contentDescription = "Close")
                 }
                 Text("Add Task", style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.size(40.dp)) // موازنة المساحة
+                Spacer(Modifier.size(40.dp))
             }
 
-            // Fields
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -273,12 +250,10 @@ private fun AddTaskSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Deadline Field - تم التعديل هنا
-            // بدل الـ InteractionSource المعقد، استخدمنا Box فوق الحقل أو enabled=false مع clickable
             Box(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = deadline,
-                    onValueChange = { },
+                    onValueChange = {},
                     label = { Text("Deadline") },
                     readOnly = true,
                     singleLine = true,
@@ -289,7 +264,6 @@ private fun AddTaskSheet(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                // طبقة شفافة فوق التيكست فيلد عشان نضمن إن أي ضغطة تفتح التاريخ
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -297,12 +271,8 @@ private fun AddTaskSheet(
                 )
             }
 
-            Spacer(Modifier.height(4.dp))
-
-            // Action Button
             Button(
                 onClick = { onConfirm(title, subject, deadline) },
-                // الزرار مش هيشتغل غير لما كل البيانات تكون موجودة
                 enabled = title.isNotBlank() && subject.isNotBlank() && deadline.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -316,14 +286,12 @@ private fun AddTaskSheet(
         }
     }
 
-    // Date Picker Dialog Logic
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // هنا اللعبة كلها: لازم نتأكد إن القيمة مش null
                         val selectedMillis = datePickerState.selectedDateMillis
                         if (selectedMillis != null) {
                             deadline = convertMillisToDate(selectedMillis)
@@ -345,10 +313,9 @@ private fun AddTaskSheet(
     }
 }
 
-// دالة مساعدة لتحويل الوقت من Milliseconds إلى نص
 @RequiresApi(Build.VERSION_CODES.O)
 private fun convertMillisToDate(millis: Long): String {
-    val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy") // مثال: Nov 28, 2025
+    val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
     return Instant.ofEpochMilli(millis)
         .atZone(ZoneId.systemDefault())
         .toLocalDate()

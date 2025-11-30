@@ -7,13 +7,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -23,6 +26,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,24 +46,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.data.DataRepository
+import com.example.model.Deck
 
+private val Accent = Color(0xFF2F7D66)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun decks_list(
     navController: NavController,
-    deckclick: () -> Unit = {navController.navigate(routs.deckDetails)}
-){
-    var isAddDeckDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var name by remember { mutableStateOf("") }
+    deckclick: () -> Unit = { }
+) {
+    val decks = DataRepository.decks
 
-    addDeckDialog(
-        onDismiss = { isAddDeckDialogOpen = false },
-        onConfirm = {isAddDeckDialogOpen = false},
-        isOpen = isAddDeckDialogOpen,
-        name = name,
-        onnameChange = { name = it }
-    )
+    var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var newDeckName by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -70,10 +74,9 @@ fun decks_list(
             )
         },
         bottomBar = {
-            adddeckbtn({isAddDeckDialogOpen=true})
+            adddeckbtn { isSheetOpen = true }
         }
-    ){
-            innerpadding ->
+    ) { innerpadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,18 +91,26 @@ fun decks_list(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                item { deckshape("Ch1",deckclick)}
-                item {  deckshape("Ch2",deckclick)}
-                item { deckshape("Ch3",deckclick)}
-                item { deckshape("Ch4",deckclick)}
+                items(decks){ deck ->
+                    deckshape(deck = deck, deckclick = { navController.navigate("deckDetails/${deck.title}")})
+                }
             }
         }
     }
+
+    if (isSheetOpen) {
+        AddDeckSheet(
+            onDismiss = { isSheetOpen = false },
+            onConfirm = { title, subject ->
+                DataRepository.addDeck(Deck(title = title, subject = subject))
+                isSheetOpen = false
+            }
+        )
+    }
 }
 
-
 @Composable
-fun deckshape(title : String, deckclick: () -> Unit, Questions: List<String> = emptyList(), Answers: List<String> = emptyList()){
+fun deckshape(deck: Deck, deckclick: () -> Unit){
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,7 +121,13 @@ fun deckshape(title : String, deckclick: () -> Unit, Questions: List<String> = e
 
     ){
         Column {
-            Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(
+                text = deck.subject,
+                color = Accent,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(text = deck.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(Modifier.height(4.dp))
             Text(text = "10 flashcards", color = Color(0xFF67C090))
         }
@@ -140,9 +157,70 @@ fun adddeckbtn(adddeckclick: () -> Unit) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddDeckSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (title: String, subject: String) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var subject by remember { mutableStateOf("") }
 
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
+            // Header with Cancel button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
+                }
+                Text("Add Deck", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.size(40.dp))
+            }
 
+            // Deck Title
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Deck Title") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Subject Name
+            OutlinedTextField(
+                value = subject,
+                onValueChange = { subject = it },
+                label = { Text("Subject") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Confirm Button
+            Button(
+                onClick = { onConfirm(title, subject) },
+                enabled = title.isNotBlank() && subject.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F7D66))
+            ) {
+                Text("Add Deck", color = Color.White, fontWeight = FontWeight.SemiBold)
+            }
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+}
 
 
 

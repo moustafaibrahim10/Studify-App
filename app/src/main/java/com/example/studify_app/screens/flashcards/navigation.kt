@@ -11,28 +11,28 @@ import com.example.studify_app.StatisticsScreen
 
 @Composable
 fun navigation() {
-    val navController= rememberNavController()
-    NavHost(navController=navController, startDestination = routs.deckList, builder = {
-        composable(routs.deckList) {
-            decks_list(navController)
-        }
-        composable(route=routs.deckDetails) {
-            deck_details_screen( navController)
-        }
-        composable(routs.flashCardTesting) {
-            flashCard_testing_screen(navController)
-        }
-        composable(routs.flashcardsAnalytics) {
-            flashcardsAnalytics(navController)
-        }
-        composable(routs.addFlashCard) {
-            AddFlashCard(navController)
-        }
-        composable(routs.statisticsScreen) {
-            StatisticsScreen(navController)
-        }
-
-    })
+//    val navController= rememberNavController()
+//    NavHost(navController=navController, startDestination = routs.deckList, builder = {
+//        composable(routs.deckList) {
+//            decks_list(navController)
+//        }
+//        composable(route=routs.deckDetails) {
+//            deck_details_screen( navController)
+//        }
+//        composable(routs.flashCardTesting) {
+//            flashCard_testing_screen(navController)
+//        }
+//        composable(routs.flashcardsAnalytics) {
+//            flashcardsAnalytics(navController)
+//        }
+//        composable(routs.addFlashCard) {
+//            AddFlashCard(navController)
+//        }
+//        composable(routs.statisticsScreen) {
+//            StatisticsScreen(navController)
+//        }
+//
+//    })
 }
 
 

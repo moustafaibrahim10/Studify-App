@@ -26,70 +26,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.controller.SubjectController
+import com.example.data.DataRepository
+import com.example.data.DataRepository.subjects
 import com.example.finalfinalefinal.decks_list
 import com.example.finalfinalefinal.routs
+import com.example.model.Subject
 
-val subjects = listOf(
-    SubjectUi("Mathematics", 60, 5, 20),
-    SubjectUi("Physics", 45, 3, 15),
-    SubjectUi("Chemistry", 75, 7, 25),
-    SubjectUi("Biology", 55, 4, 18),
-)
 
-@Composable
-fun SetSub(){
-    MaterialTheme {
-        val nav = rememberNavController()
-        NavHost(navController = nav, startDestination = "subjects") {
-
-            composable("subjects") {
-                SubjectsScreen(
-                    subjects = subjects,
-                    onSubjectClick = { s ->
-                        nav.navigate("subject/${s.name}")
-                    }
-                )
-            }
-
-            composable(
-                route = "subject/{name}",
-                arguments = listOf(navArgument("name") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val name = backStackEntry.arguments?.getString("name") ?: ""
-                val tasksSubjects = listOf(
-                    SubjectTaskUi("Math", "Cell Structure", false),
-                    SubjectTaskUi("Science", "Photosynthesis", false),
-                    SubjectTaskUi("Biology", "Genetics", false)
-                )
-
-                val decks = listOf(
-                    DeckUi("Chapter 3", 15),
-                    DeckUi("Chapter 4", 20),
-                    DeckUi("Chapter 5", 18),
-                )
-                val progress = subjects.find { it.name == name }?.progress ?: 0
-
-                SubjectDetailsScreen(
-                    nav,
-                    subjectName = name,
-                    initialProgress = progress,
-                    initialTasks = tasksSubjects,
-                    initialDecks = decks,
-                    onBack = { nav.popBackStack() },
-                    onStartPomodoro = { /* TODO: open pomodoro */ },
-                )
-            }
-            composable(routs.deckList) {
-                decks_list(navController = nav)
-            }
-        }
-    }
-}
 data class SubjectUi(
     val name: String,
     val progress: Int,
@@ -105,10 +56,12 @@ private val Mint     = Color(0xFF67C090)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectsScreen(
-    subjects: List<SubjectUi>,
-    onSubjectClick: (SubjectUi) -> Unit = {},
+    navController: NavController,
+    onSubjectClick: (Subject) -> Unit = {},
 ) {
-    val items = remember { mutableStateListOf<SubjectUi>().also { it.addAll(subjects) } }
+
+    val subjects = DataRepository.subjects
+
     var showAddSheet by rememberSaveable { mutableStateOf(false) }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -121,9 +74,7 @@ fun SubjectsScreen(
                         }
                     }
                 )
-
             },
-            // ⬇️ شيلنا الـ bottomBar
             containerColor = ScreenBg,
             floatingActionButton = {
                 FloatingActionButton(
@@ -134,6 +85,7 @@ fun SubjectsScreen(
                 ) { Icon(Icons.Outlined.Add, contentDescription = "Add") }
             }
         ) { padding ->
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -151,11 +103,11 @@ fun SubjectsScreen(
                     )
                 }
 
-                items(items) { s ->
+                items(subjects) { subject ->
                     SubjectCard(
-                        subject = s,
+                        subject = subject,
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { onSubjectClick(s) }
+                        onClick = { onSubjectClick(subject) }
                     )
                 }
 
@@ -163,21 +115,12 @@ fun SubjectsScreen(
             }
         }
     }
-//كومنت 
+
     if (showAddSheet) {
         AddSubjectSheet(
             onDismiss = { showAddSheet = false },
-            onConfirm = { name, progress, tasks, flashcards ->
-                if (name.isNotBlank()) {
-                    items.add(
-                        SubjectUi(
-                            name = name.trim(),
-                            progress = progress.coerceIn(0, 100),
-                            tasksCount = tasks.coerceAtLeast(0),
-                            flashcardsCount = flashcards.coerceAtLeast(0)
-                        )
-                    )
-                }
+            onConfirm = { name ->
+                DataRepository.addSubject(Subject(name))
                 showAddSheet = false
             }
         )
@@ -186,10 +129,14 @@ fun SubjectsScreen(
 
 @Composable
 private fun SubjectCard(
-    subject: SubjectUi,
+    subject: Subject,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    val doneCount = subject?.tasks?.count { it.isDone } ?: 0
+    val total = subject?.tasks?.size ?: 0
+    subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
+
     ElevatedCard(
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
@@ -202,13 +149,13 @@ private fun SubjectCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            Text("${subject.progress}%", color = Accent, fontSize = 13.sp)
+            Text("${subject.currentprogress}%", color = Accent, fontSize = 13.sp)
             Spacer(Modifier.height(2.dp))
             Text(subject.name, fontWeight = FontWeight.Black, fontSize = 18.sp)
 
             Spacer(Modifier.height(10.dp))
             LinearProgressIndicator(
-                progress = { subject.progress / 100f },
+                progress = { subject.currentprogress / 100f },
                 color = Accent,
                 trackColor = Color.White.copy(alpha = 0.7f),
                 modifier = Modifier
@@ -219,53 +166,29 @@ private fun SubjectCard(
 
             Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "${subject.tasksCount} tasks", color = Accent, fontSize = 13.sp)
-                Text(text = "  |  ${subject.flashcardsCount} flashcards", color = Accent, fontSize = 13.sp)
+                Text("${subject.tasks.size} tasks", color = Accent, fontSize = 13.sp)
+                Text("  |  ${subject.decks.sumOf { it.cards.size }} flashcards", color = Accent, fontSize = 13.sp)
             }
         }
     }
 }
 
-@Preview(name = "Subjects - Light", showBackground = true)
-@Preview(name = "Subjects - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun SubjectsPreview() {
-    val demo = listOf(
-        SubjectUi("Mathematics", 60, 5, 20),
-        SubjectUi("Physics", 45, 3, 15),
-        SubjectUi("Chemistry", 75, 7, 25),
-        SubjectUi("Biology", 55, 4, 18),
-    )
-    MaterialTheme {
-        SubjectsScreen(subjects = demo)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddSubjectSheet(
     onDismiss: () -> Unit,
-    onConfirm: (name: String, progress: Int, tasks: Int, flashcards: Int) -> Unit
+    onConfirm: (name: String) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     var name by remember { mutableStateOf("") }
-    var progressText by remember { mutableStateOf("0") }
-    var tasksText by remember { mutableStateOf("0") }
-    var flashText by remember { mutableStateOf("0") }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .navigationBarsPadding()
-                .imePadding(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(16.dp)
         ) {
             Text("Add Subject", style = MaterialTheme.typography.titleMedium)
 
@@ -277,58 +200,25 @@ private fun AddSubjectSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = progressText,
-                    onValueChange = { progressText = it.filter { ch -> ch.isDigit() }.take(3) },
-                    label = { Text("Progress %") },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    )
-                )
-                OutlinedTextField(
-                    value = tasksText,
-                    onValueChange = { tasksText = it.filter { ch -> ch.isDigit() }.take(4) },
-                    label = { Text("Tasks") },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    )
-                )
-            }
+            Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = flashText,
-                onValueChange = { flashText = it.filter { ch -> ch.isDigit() }.take(5) },
-                label = { Text("Flashcards") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                )
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) { Text("Cancel") }
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                    Text("Cancel")
+                }
+                Spacer(Modifier.width(8.dp))
                 Button(
-                    onClick = {
-                        val p = progressText.toIntOrNull() ?: 0
-                        val t = tasksText.toIntOrNull() ?: 0
-                        val f = flashText.toIntOrNull() ?: 0
-                        onConfirm(name, p, t, f)
-                    },
+                    onClick = { onConfirm(name) },
                     enabled = name.isNotBlank(),
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Accent)
-                ) { Text("Add") }
+                ) {
+                    Text("Add")
+                }
             }
-
-            Spacer(Modifier.height(16.dp))
         }
     }
 }
