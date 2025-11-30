@@ -225,6 +225,7 @@ fun MainScaffold(
             // Other screens
             composable("calendar") { DayDetailsScreen(navController) }
             composable("pomodoro") { PomodoroScreen(navController) }
+            composable("sessionComplete") { CompleteSessionScreen(navController) }
             composable("profile") { ProfilePic(navController) }
             composable("progress") { ProgressScreen(navController) }
             composable("settings") { SettingsScr(navController) }
