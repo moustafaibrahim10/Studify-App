@@ -1,5 +1,7 @@
 package com.example.composetest.ui.theme
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,10 +18,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.DataRepository
+import com.example.model.Task
 
 private val ScreenBg = Color(0xFFF9F9F9)
 private val MintBtn  = Color(0xFF67C090)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskDetailsScreen(
@@ -27,7 +33,10 @@ fun TaskDetailsScreen(
     onBackToTasks: () -> Unit,
     onMarkComplete: () -> Unit = {}
 ) {
-    val task = DataRepository.tasks.find { it.title == title }
+    val user = DataRepository.currentUser!!
+    val subjectObj = user.subjects.find { it.name == subject }
+    val task = subjectObj?.tasks?.find { it.title == title }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,6 +50,7 @@ fun TaskDetailsScreen(
         },
         containerColor = ScreenBg
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,7 +65,12 @@ fun TaskDetailsScreen(
             Spacer(Modifier.height(4.dp))
 
             Button(
-                onClick = {},
+                onClick = {
+                    if (task != null) {
+                        task.isDone = true
+                        onMarkComplete()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),

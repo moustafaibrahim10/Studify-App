@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onLoginClick: (email: String, password: String) -> Unit,
+    onLoginClick: (email: String, password: String) -> Boolean,
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
@@ -74,7 +74,18 @@ fun LoginScreen(
     fun performLogin() {
         if (validateInput()) {
             isLoading = true
-            onLoginClick(email, password)
+
+            // EXPECT onLoginClick to return true/false
+            val success = onLoginClick(email, password)
+
+            if (!success) {
+                // login failed
+                errorMessage = "Incorrect email or password"
+                isLoading = false
+            } else {
+                // login success
+                isLoading = false
+            }
         }
     }
 

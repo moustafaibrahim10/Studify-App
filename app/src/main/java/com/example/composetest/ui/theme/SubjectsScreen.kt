@@ -3,6 +3,8 @@
 package com.example.composetest.ui.theme
 
 import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +37,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.controller.SubjectController
 import com.example.data.DataRepository
-import com.example.data.DataRepository.subjects
 import com.example.finalfinalefinal.decks_list
 import com.example.finalfinalefinal.routs
 import com.example.model.Subject
@@ -53,6 +54,7 @@ private val ScreenBg = Color(0xFFF9F9F9)
 private val Accent   = Color(0xFF2F7D66)
 private val Mint     = Color(0xFF67C090)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectsScreen(
@@ -60,7 +62,7 @@ fun SubjectsScreen(
     onSubjectClick: (Subject) -> Unit = {},
 ) {
 
-    val subjects = DataRepository.subjects
+    val subjects = DataRepository.currentUser?.subjects ?: emptyList()
 
     var showAddSheet by rememberSaveable { mutableStateOf(false) }
 

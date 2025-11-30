@@ -11,7 +11,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -24,17 +26,18 @@ import androidx.navigation.navArgument
 import com.example.composetest.ui.theme.SubjectTaskUi
 import com.example.composetest.ui.theme.TaskDetailsScreen
 import com.example.composetest.ui.TasksScreen
-import com.example.composetest.ui.TaskUi
 import com.example.composetest.ui.theme.DeckUi
 import com.example.composetest.ui.theme.SubjectDetailsScreen
 import com.example.composetest.ui.theme.SubjectUi
 import com.example.composetest.ui.theme.SubjectsScreen
+import com.example.data.DataRepository
 
 import com.example.finalfinalefinal.deck_details_screen
 import com.example.finalfinalefinal.decks_list
 import com.example.finalfinalefinal.flashCard_testing_screen
 import com.example.finalfinalefinal.flashcardsAnalytics
 import com.example.finalfinalefinal.routs
+import com.example.model.User
 
 import com.example.studify_app.screens.auth.ForgotPasswordScreen
 import com.example.studify_app.screens.auth.LoginScreen
@@ -50,46 +53,13 @@ class MainController : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val subjects = listOf(
-            SubjectUi("Mathematics", 60, 5, 20),
-            SubjectUi("Physics", 45, 3, 15),
-            SubjectUi("Chemistry", 75, 7, 25),
-            SubjectUi("Biology", 55, 4, 18)
-        )
-
-        val decks = listOf(
-            DeckUi("Chapter 3", 15),
-            DeckUi("Chapter 4", 20),
-            DeckUi("Chapter 5", 18)
-        )
 
         setContent {
             MaterialTheme {
                 val navController = rememberNavController()
 
-                // Tasks state قائمة متغيرة قابلة للتحديث مباشرة
-                val tasks = remember {
-                    mutableStateListOf(
-                        TaskUi("Math", "Cell Structure", "Due: Apr 20"),
-                        TaskUi("Science", "Photosynthesis", "Due: Apr 22"),
-                        TaskUi("Biology", "Genetics", "Due: Apr 25")
-                    )
-                }
-
-                // SubTasks ما زالت موجودة للـ SubjectDetailsScreen
-                val tasksSubjects = remember {
-                    mutableStateListOf(
-                        SubjectTaskUi("Math", "Cell Structure", false),
-                        SubjectTaskUi("Science", "Photosynthesis", false),
-                        SubjectTaskUi("Biology", "Genetics", false)
-                    )
-                }
                 MainScaffold(
                     navController = navController,
-                    subjects = subjects,
-                    tasks = tasks,
-                    decks = decks,
-                    subTasks = tasksSubjects
                 )
 
             }
@@ -101,11 +71,9 @@ class MainController : ComponentActivity() {
 @Composable
 fun MainScaffold(
     navController: NavHostController,
-    subjects: List<SubjectUi>,
-    tasks: MutableList<TaskUi>,
-    decks: List<DeckUi>,
-    subTasks: MutableList<SubjectTaskUi>
 ) {
+
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -128,13 +96,13 @@ fun MainScaffold(
             composable("introTasks") {
                 introTasks(
                     onNextClick = { navController.navigate("introPomodoro") },
-                    onSkipClick = { navController.navigate("introFlashcards") }
+                    onSkipClick = { navController.navigate("login") }
                 )
             }
             composable("introPomodoro") {
                 introPomodoro(
                     onNextClick = { navController.navigate("introFlashcards") },
-                    onSkipClick = { navController.navigate("introFlashcards") }
+                    onSkipClick = { navController.navigate("login") }
                 )
             }
             composable("introFlashcards") { introFlashcards(onGetStartedClick = { navController.navigate("login") }) }
@@ -142,17 +110,39 @@ fun MainScaffold(
             // Auth screens
             composable("login") {
                 LoginScreen(
-                    onLoginClick = { _, _ -> navController.navigate("home") },
+                    onLoginClick = { email, password ->
+                        val user = DataRepository.users.find {
+                            it.email == email && it.password == password
+                        }
+
+                        if (user != null) {
+                            DataRepository.currentUser = user
+                            navController.navigate("home")
+                            true   // success
+                        } else {
+                            false  // failure
+                        }
+                    },
                     onRegisterClick = { navController.navigate("register") },
-                    onForgotPasswordClick = { navController.navigate("forgotPassword") }
+                    onForgotPasswordClick = { /* your code */ }
                 )
+
             }
+
             composable("register") {
                 RegisterScreen(
-                    onRegisterClick = { _, _, _ -> navController.navigate("login") },
+                    onRegisterClick = { name, email, password ->
+                        if (DataRepository.createAccount(email, name, password)) {
+                            navController.navigate("home")
+                        } else {
+                            // username exists: show error
+                        }
+
+                    },
                     onLoginClick = { navController.navigate("login") }
                 )
             }
+
             composable("forgotPassword") {
                 ForgotPasswordScreen(
                     onBackClick = { navController.navigateUp() },
