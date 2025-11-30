@@ -86,4 +86,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation(libs.androidx.espresso.core)
+    // Time Clock
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.1")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.2.1")
+
 }

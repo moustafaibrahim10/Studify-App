@@ -119,7 +119,7 @@ fun MainScaffold(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "welcomeScreen",
             modifier = Modifier.padding(innerPadding)
         ) {
 
@@ -233,13 +233,20 @@ fun MainScaffold(
 
 
             // Other screens
-            composable("calendar") { /* TODO */ }
+            composable("calendar") { DayDetailsScreenContent(navController) }
             composable("pomodoro") { PomodoroScreen(navController) }
             composable("profile") { ProfilePic(navController) }
             composable("progress") { ProgressScreen(navController) }
             composable("settings") { SettingsScr(navController) }
             composable("edit") { EditScr(navController) }
-            composable("Counter") { CounterScreen(navController) }
+            composable(
+                "Counter/{totalSeconds}",
+                arguments = listOf(navArgument("totalSeconds") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val totalSeconds = backStackEntry.arguments?.getInt("totalSeconds") ?: 1500
+                CounterScreen(navController, totalSeconds)
+            }
+
 
         }
     }

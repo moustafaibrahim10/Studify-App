@@ -26,19 +26,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 
-class Counter : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            val navController = rememberNavController()
-            CounterScreen(navController)
-        }
-    }
-}
-
 @Composable
-fun CounterScreen(navController: NavController) {
-    val totalTime = 25 * 60
+fun CounterScreen(navController: NavController, totalTime: Int) {
     var timeLeft by remember { mutableStateOf(totalTime) }
     var isRunning by remember { mutableStateOf(true) }
 
@@ -122,7 +111,7 @@ fun CounterScreen(navController: NavController) {
                 }
 
                 Text(
-                    text = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60),
+                    text = String.format("%02d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, timeLeft % 60),
                     style = TextStyle(
                         color = Color(0xFF111111),
                         fontSize = 38.sp,
