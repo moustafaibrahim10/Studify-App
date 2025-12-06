@@ -109,7 +109,9 @@ fun decks_list(
                             name = subject.trim(),
                             decks = mutableListOf(newDeck)
                         )
-                        user.subjects.add(newSubject)                    }
+                        user.subjects.add(newSubject)
+                        user.decks.add(newDeck)
+                    }
                 }
                 isSheetOpen = false
             }
