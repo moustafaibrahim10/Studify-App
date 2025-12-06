@@ -28,6 +28,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,13 +48,12 @@ import com.example.data.DataRepository
 @Composable
 fun ProfilePic(navController: NavHostController){
     val currentUser = DataRepository.currentUser!!
-    val tasks = currentUser.tasks
+    val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
 
-    val total = tasks.size
-    val completed = tasks.count { it.isDone }
 
-    val assignmentsProgress =
-        if (total == 0) 0f else completed.toFloat() / total
+    val totalTasks = tasks.value.size
+    val completedTasks = tasks.value.count { it.isDone }
+    val assignmentsProgress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
 
 
     Column (
@@ -140,7 +141,7 @@ fun ProfilePic(navController: NavHostController){
             GoalItem(
                 icon = R.drawable.assic,
                 title = "Assignments",
-                description = "Finish 50% of the assignments",
+                description = "Finish ${(assignmentsProgress*100).toInt()}% of the assignments",
                 progress = assignmentsProgress
             )
 
