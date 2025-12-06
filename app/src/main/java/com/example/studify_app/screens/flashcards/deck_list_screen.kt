@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
 import com.example.model.Deck
+import com.example.model.Subject
 
 private val Accent = Color(0xFF2F7D66)
 
@@ -34,7 +35,7 @@ fun decks_list(
     deckclick: () -> Unit = { }
 ) {
     val user = DataRepository.currentUser!!
-    val decks = user.decks
+    val decks = remember { derivedStateOf { user.subjects.flatMap { it.decks } } }
 
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -75,7 +76,7 @@ fun decks_list(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(decks) { deck ->
+                items(decks.value) { deck ->
                     deckshape(deck = deck) {
                         navController.navigate("deckDetails/${deck.title}")
                     }
@@ -97,19 +98,18 @@ fun decks_list(
                         subject = subject.trim(),
                     )
                     val existingSubject =
-                        user.decks.find { it.subject.equals(subject.trim(), ignoreCase = true) }
+                        user.subjects.find { it.name.equals(subject.trim(), ignoreCase = true) }
 
                     if (existingSubject != null) {
-                        user.decks.add(
-                            Deck(
-                                title = newDeck.title,
-                                subject = existingSubject.subject, // keep consistent
-                            )
-                        )
+                        existingSubject.decks.add(newDeck)
+                        user.decks.add(newDeck)
 
                     } else {
-                        user.decks.add(newDeck)
-                    }
+                        val newSubject = Subject(
+                            name = subject.trim(),
+                            decks = mutableListOf(newDeck)
+                        )
+                        user.subjects.add(newSubject)                    }
                 }
                 isSheetOpen = false
             }

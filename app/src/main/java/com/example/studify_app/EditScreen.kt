@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
+import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -178,6 +179,8 @@ fun EditScr(navController: NavController) {
                 }
 
                 successMessage = "Profile updated successfully!"
+
+                navController.popBackStack()
 
             },
             modifier = Modifier
