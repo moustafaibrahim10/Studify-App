@@ -179,7 +179,7 @@ fun TasksScreen(
 
                     // find subject
                     val existingSubject =
-                        currentUser.subjects.find { it.name.equals(subject.trim(), ignoreCase = true) }
+                        currentUser.subjects.find { it.name.equals(subject.trim()) }
 
                     if (existingSubject != null) {
                         // add task to existing subject
