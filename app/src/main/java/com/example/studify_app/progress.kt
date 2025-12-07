@@ -20,6 +20,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset // مهم للرسم
 import androidx.compose.ui.graphics.Path // مهم لرسم المنحنى
 import androidx.compose.ui.graphics.drawscope.Stroke // مهم لرسم الخطوط
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp // مهم للرسم
 import androidx.navigation.NavController
 import com.example.finalfinalefinal.routs
@@ -38,7 +40,7 @@ fun ProgressScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Progress", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                    Text("Progress", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), fontSize = 18.sp)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -59,7 +61,6 @@ fun ProgressScreen(navController: NavController) {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 1. ساعات الدراسة الأسبوعية
             item {
                 StudyHoursCard(
                     title = "Weekly Study Hours",

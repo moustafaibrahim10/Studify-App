@@ -15,9 +15,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.studify_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +29,7 @@ fun flashcardsAnalytics(navController: NavController){
     Scaffold (
         topBar = {
             TopAppBar(
-                title = { Text("Analytics",fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)},
+                title = { Text("Analytics",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)},
                 navigationIcon = {
                     IconButton (onClick = {
                         navController.popBackStack()

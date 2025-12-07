@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,7 +70,7 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                     textAlign = TextAlign.Center
                 )
             )
@@ -115,7 +117,7 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
                     style = TextStyle(
                         color = Color(0xFF111111),
                         fontSize = 38.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                     )
                 )
             }
@@ -134,7 +136,7 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
                     Text(
                         if (isRunning) "Pause" else "Resume",
                         color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                     )
                 }
 
@@ -151,7 +153,8 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAF3F2))
                 ) {
-                    Text("Stop", color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text("Stop", color = Color.Black,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
+                    )
                 }
             }
         }

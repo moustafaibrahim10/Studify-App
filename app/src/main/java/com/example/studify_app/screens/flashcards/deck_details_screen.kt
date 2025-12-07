@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,12 +39,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
+import com.example.studify_app.R
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +66,7 @@ fun deck_details_screen(
                 title = {
                     Text(
                         deckName,
-                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -116,7 +120,7 @@ fun question_form(question: String){
         modifier = Modifier.fillMaxWidth().padding(10.dp)
     ){
         Column {
-            Text(text = question, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF000000)
+            Text(text = question,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), fontSize = 16.sp, color = Color(0xFF000000)
             )
             Spacer(Modifier.height(4.dp))
         }
@@ -137,7 +141,7 @@ fun startreviewBtn(onstartreviewClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Spacer(Modifier.width(8.dp))
-            Text("Start Review", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp))
+            Text("Start Review", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp))
 
         }
     }
@@ -156,7 +160,7 @@ fun addflashcardBtn(onaddflashcardClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Spacer(Modifier.width(8.dp))
-            Text("Add Flashcard", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp))
+            Text("Add Flashcard", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp))
 
         }
     }
@@ -177,13 +181,23 @@ fun AddFlashcardSheet(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Add Flashcard", style = MaterialTheme.typography.titleMedium)
+            Text("Add Flashcard",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), style = MaterialTheme.typography.titleMedium)
 
             OutlinedTextField(
                 value = question,
                 onValueChange = { question = it },
-                label = { Text("Question") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Question",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(Modifier.height(12.dp))
@@ -191,8 +205,18 @@ fun AddFlashcardSheet(
             OutlinedTextField(
                 value = answer,
                 onValueChange = { answer = it },
-                label = { Text("Answer") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Answer",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(Modifier.height(16.dp))
@@ -205,7 +229,7 @@ fun AddFlashcardSheet(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Cancel")
+                    Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
@@ -213,7 +237,7 @@ fun AddFlashcardSheet(
                     enabled = question.isNotBlank() && answer.isNotBlank(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Add")
+                    Text("Add",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 }
             }
         }
@@ -241,15 +265,15 @@ fun Questionsdt(): List<String>{
 }
 fun Answersdt(): List<String>{
     return listOf(
-        "Anwer 1",
-        "Anwer 2",
-        "Anwer 3",
-        "Anwer 4",
-        "Anwer 5",
-        "Anwer 6",
-        "Anwer 7",
-        "Anwer 8",
-        "Anwer 9",
-        "Anwer 10",
+        "Answer 1",
+        "Answer 2",
+        "Answer 3",
+        "Answer 4",
+        "Answer 5",
+        "Answer 6",
+        "Answer 7",
+        "Answer 8",
+        "Answer 9",
+        "Answer 10",
     )
 }

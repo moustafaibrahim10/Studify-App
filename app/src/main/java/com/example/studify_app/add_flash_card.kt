@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.example.data.DataRepository
@@ -34,7 +36,7 @@ fun AddFlashCard(
             text = "Add New Flashcard",
             style = MaterialTheme.typography.titleLarge.copy(
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
             )
         )
 
@@ -45,7 +47,7 @@ fun AddFlashCard(
             modifier = Modifier
                 .padding(18.dp)
                 .fillMaxWidth(),
-            label = { Text("Front Text", color = mintGreen) },
+            label = { Text("Front Text", color = mintGreen,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
             shape = RoundedCornerShape(10),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFFF0F4F3),
@@ -63,7 +65,7 @@ fun AddFlashCard(
             modifier = Modifier
                 .padding(18.dp)
                 .fillMaxWidth(),
-            label = { Text("Back Text", color = mintGreen) },
+            label = { Text("Back Text", color = mintGreen,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
             shape = RoundedCornerShape(10),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFFF0F4F3),
@@ -106,7 +108,7 @@ fun Buttons(
                 contentColor = Color.Black
             )
         ) {
-            Text("Cancel")
+            Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
         }
 
         Spacer(Modifier.weight(1f))
@@ -125,7 +127,7 @@ fun Buttons(
                 contentColor = Color.White
             )
         ) {
-            Text("Save")
+            Text("Save",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
         }
     }
 }

@@ -97,7 +97,6 @@ fun EditScr(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Profile Picture
         Image(
             painter = painterResource(id = R.drawable.profileowl),
             contentDescription = "Profile Pic",
@@ -151,6 +150,11 @@ fun EditScr(navController: NavController) {
             Spacer(modifier = Modifier.height(5.dp))
         }
 
+        val hasChanges = remember(username, email, password, confirmPassword) {
+            username != user.username ||
+                    email != user.email ||
+                    password.isNotEmpty()
+        }
         // Save button
         Button(
             onClick = {
@@ -195,7 +199,7 @@ fun EditScr(navController: NavController) {
         ) {
             Text(
                 text = "Save Changes",
-                color = Color.Black,
+                color = Color.White,
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
             )
         }

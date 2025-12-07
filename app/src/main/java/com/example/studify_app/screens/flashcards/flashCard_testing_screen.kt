@@ -1,5 +1,7 @@
 package com.example.finalfinalefinal
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
+import com.example.studify_app.R
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun flashCard_testing_screen(
@@ -57,7 +63,7 @@ fun flashCard_testing_screen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(deckname, textAlign = TextAlign.Center) },
+                title = { Text(deckname, textAlign = TextAlign.Center,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -113,7 +119,7 @@ fun qNaBox(qORa: String){
             .background(Color(0xFF67C090),shape= RoundedCornerShape(15.dp)),
         contentAlignment = Alignment.Center
     ){
-        Text(text =qORa, fontWeight = FontWeight.Bold, color = Color(0xFFFFFFFF))
+        Text(text =qORa, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)), color = Color(0xFFFFFFFF))
     }
 }
 
@@ -130,7 +136,7 @@ fun flipBtn(onflipclick: () -> Unit){
             modifier = Modifier.fillMaxWidth(),
         ) {
             Spacer(Modifier.width(8.dp))
-            Text("Flip", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp), color= Color(
+            Text("Flip", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp), color= Color(
                 0xFF000000
             )
             )
@@ -171,7 +177,7 @@ fun rightBtn(onNext: () -> Unit){
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F0F2)),
         ) {
             Spacer(Modifier.width(8.dp))
-            Text("Right 🥳", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp), color= Color(
+            Text("Right 🥳", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp), color= Color(
                 0xFF000000
             )
             )
@@ -189,7 +195,7 @@ fun wrongBtn(onNext: () -> Unit){
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F0F2)),
         ) {
             Spacer(Modifier.width(8.dp))
-            Text("Wrong 😢", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp), color= Color(
+            Text("Wrong 😢", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp), color= Color(
                 0xFF000000
             )
             )
@@ -216,15 +222,15 @@ fun Questions(): List<String>{
 }
 fun Answers(): List<String>{
     return listOf(
-        "Anwer 1",
-        "Anwer 2",
-        "Anwer 3",
-        "Anwer 4",
-        "Anwer 5",
-        "Anwer 6",
-        "Anwer 7",
-        "Anwer 8",
-        "Anwer 9",
-        "Anwer 10",
+        "Answer 1",
+        "Answer 2",
+        "Answer 3",
+        "Answer 4",
+        "Answer 5",
+        "Answer 6",
+        "Answer 7",
+        "Answer 8",
+        "Answer 9",
+        "Answer 10",
     )
 }

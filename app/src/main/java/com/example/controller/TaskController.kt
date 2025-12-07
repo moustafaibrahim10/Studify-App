@@ -1,5 +1,7 @@
 package com.example.controller
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.data.DataRepository
 import com.example.model.Subject
 import com.example.model.Task
@@ -17,6 +19,7 @@ class TaskController(private val subjectController: SubjectController) {
         task.due = newDue
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun deleteTask(subject: Subject, task: Task) {
         subject.tasks.remove(task)
         DataRepository.removeTask(task)

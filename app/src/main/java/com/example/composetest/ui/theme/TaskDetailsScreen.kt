@@ -14,11 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.DataRepository
 import com.example.model.Task
+import com.example.studify_app.R
 
 private val ScreenBg = Color(0xFFF9F9F9)
 private val MintBtn  = Color(0xFF67C090)
@@ -40,7 +43,7 @@ fun TaskDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Task Details", fontWeight = FontWeight.Bold) },
+                title = { Text("Task Details", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))) },
                 navigationIcon = {
                     IconButton(onClick = onBackToTasks) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = "Back")
@@ -81,7 +84,7 @@ fun TaskDetailsScreen(
                     "Mark as Complete",
                     color = Color.White,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                 )
             }
         }
@@ -91,7 +94,7 @@ fun TaskDetailsScreen(
 @Composable
 private fun LabeledReadOnlyField(label: String, value: String) {
     Column {
-        Text(label, fontSize = 14.sp)
+        Text(label, fontSize = 14.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
         Spacer(Modifier.height(6.dp))
         Surface(
             color = Color(0xFFEFF5F3),
@@ -106,7 +109,7 @@ private fun LabeledReadOnlyField(label: String, value: String) {
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(value, color = Color(0xFF728C82))
+                Text(value, color = Color(0xFF728C82),fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             }
         }
     }

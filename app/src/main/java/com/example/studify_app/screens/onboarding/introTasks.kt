@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,7 +45,7 @@ fun introTasks(
             Spacer(modifier = Modifier.height(20.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.owl_tasks), // حط الصورة في res/drawable
+                painter = painterResource(id = R.drawable.owl_tasks),
                 contentDescription = "Tasks",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -54,13 +56,14 @@ fun introTasks(
             Text(
                 text = "Tasks",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = Color(0xFF1E1E1E)
             )
 
             Text(
                 text = "Plan your subjects and track all assignments easily.",
                 fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 textAlign = TextAlign.Center,
                 color = Color(0xFF4A4A4A),
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -85,11 +88,13 @@ fun introTasks(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text("Next", color = Color.White, fontSize = 16.sp)
+                    Text("Next", color = Color.White, fontSize = 16.sp,fontFamily = FontFamily(Font(R.font.lexend_semibold)),
+                    )
                 }
 
                 TextButton(onClick = onSkipClick) {
-                    Text("Skip", color = Color(0xFF1E1E1E))
+                    Text("Skip", color = Color(0xFF1E1E1E),fontFamily = FontFamily(Font(R.font.lexend_semibold)),
+                    )
                 }
             }
         }

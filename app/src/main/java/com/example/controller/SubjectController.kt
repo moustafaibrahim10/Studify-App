@@ -1,5 +1,7 @@
 package com.example.controller
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.data.DataRepository
 import com.example.model.Deck
 import com.example.model.Subject
@@ -7,16 +9,19 @@ import com.example.model.Task
 
 class SubjectController {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addSubject(name: String): Subject {
         val subject = Subject(name)
         DataRepository.addSubject(subject)
         return subject
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun removeSubject(subject: Subject) {
         DataRepository.removeSubject(subject)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getSubjectByName(name: String): Subject? {
         return DataRepository.getSubjectByName(name)
     }
@@ -27,6 +32,7 @@ class SubjectController {
         subject.currentprogress = if (total > 0) completed * 100 / total else 0
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addTask(subject: Subject, task: Task) {
         subject.tasks.add(task)
         DataRepository.addTask(task)

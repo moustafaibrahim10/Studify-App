@@ -12,12 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.studify_app.R
 
 
 private fun isValidEmail(email: String): Boolean {
@@ -87,7 +89,6 @@ fun ForgotPasswordScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Header with Back Button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -102,6 +103,7 @@ fun ForgotPasswordScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Back to Login",
+                    fontFamily = FontFamily(Font(R.font.lexend)),
                     color = darkText,
                     fontSize = 16.sp
                 )
@@ -109,11 +111,10 @@ fun ForgotPasswordScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Title
             Text(
                 text = "Forgot Password",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = darkText
             )
 
@@ -122,6 +123,7 @@ fun ForgotPasswordScreen(
             Text(
                 text = "Enter your email to receive a reset link",
                 fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 color = subtitleColor,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -165,7 +167,17 @@ fun ForgotPasswordScreen(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -193,17 +205,17 @@ fun ForgotPasswordScreen(
                     Text(
                         "Send Reset Link",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.lexend_semibold))
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Info Text
             Text(
                 text = "You'll receive an email with instructions to reset your password. Please check your spam folder if you don't see it.",
                 color = subtitleColor,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp)

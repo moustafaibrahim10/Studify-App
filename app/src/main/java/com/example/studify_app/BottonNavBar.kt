@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,7 +41,7 @@ fun BottomNavBar(navController: NavHostController) {
                 )
             },
             label = {
-                Text("Home", color = if (currentRoute == "home") selectedColor else activeColor)
+                Text("Home",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)), color = if (currentRoute == "home") selectedColor else activeColor)
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent
@@ -65,7 +67,7 @@ fun BottomNavBar(navController: NavHostController) {
                 )
             },
             label = {
-                Text("Subjects", color = if (currentRoute == "subjects") selectedColor else activeColor)
+                Text("Subjects",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)), color = if (currentRoute == "subjects") selectedColor else activeColor)
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent
@@ -91,7 +93,7 @@ fun BottomNavBar(navController: NavHostController) {
                 )
             },
             label = {
-                Text("Calendar", color = if (currentRoute == "calendar") selectedColor else activeColor)
+                Text("Calendar",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)) ,color = if (currentRoute == "calendar") selectedColor else activeColor)
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent
@@ -117,7 +119,7 @@ fun BottomNavBar(navController: NavHostController) {
                 )
             },
             label = {
-                Text("Pomodoro", color = if (currentRoute == "pomodoro") selectedColor else activeColor)
+                Text("Pomodoro",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)), color = if (currentRoute == "pomodoro") selectedColor else activeColor)
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent
@@ -143,7 +145,7 @@ fun BottomNavBar(navController: NavHostController) {
                 )
             },
             label = {
-                Text("Profile", color = if (currentRoute == "profile") selectedColor else activeColor)
+                Text("Profile",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)) ,color = if (currentRoute == "profile") selectedColor else activeColor)
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent

@@ -17,6 +17,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +26,7 @@ import androidx.navigation.NavController
 import com.example.data.DataRepository
 import com.example.model.Deck
 import com.example.model.Subject
+import com.example.studify_app.R
 
 private val Accent = Color(0xFF2F7D66)
 
@@ -46,6 +49,7 @@ fun decks_list(
                     Text(
                         "My Flashcards",
                         fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
@@ -68,7 +72,7 @@ fun decks_list(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(Modifier.height(16.dp))
-            Text("Decks", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text("Decks", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)), fontSize = 20.sp)
 
             Spacer(Modifier.height(12.dp))
 
@@ -85,7 +89,6 @@ fun decks_list(
         }
     }
 
-    // UPDATED: logic for subject merging
     if (isSheetOpen) {
         AddDeckSheet(
             onDismiss = { isSheetOpen = false },
@@ -135,11 +138,12 @@ fun deckshape(deck: Deck, deckclick: () -> Unit) {
                 text = deck.subject,
                 color = Accent,
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
             )
-            Text(text = deck.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = deck.title, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), fontSize = 16.sp)
             Spacer(Modifier.height(4.dp))
-            Text(text = "${deck.cards.size} flashcards", color = Color(0xFF67C090))
+            Text(text = "${deck.cards.size} flashcards", color = Color(0xFF67C090),fontFamily = FontFamily(Font(
+                R.font.plus_jakarta_sans_semibold)))
         }
     }
 }
@@ -159,7 +163,7 @@ fun adddeckbtn(adddeckclick: () -> Unit) {
         ) {
             Icon(Icons.Default.Add, contentDescription = "ADD DECK")
             Spacer(Modifier.width(8.dp))
-            Text("Add New Deck", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(10.dp))
+            Text("Add New Deck",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), modifier = Modifier.padding(10.dp))
         }
     }
 }
@@ -188,24 +192,44 @@ fun AddDeckSheet(
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close")
                 }
-                Text("Add Deck", style = MaterialTheme.typography.titleMedium)
+                Text("Add Deck", style = MaterialTheme.typography.titleMedium,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 Spacer(Modifier.size(40.dp))
             }
 
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Deck Title") },
+                label = { Text("Deck Title",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             OutlinedTextField(
                 value = subject,
                 onValueChange = { subject = it },
-                label = { Text("Subject") },
+                label = { Text("Subject",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Button(
@@ -217,7 +241,7 @@ fun AddDeckSheet(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F7D66))
             ) {
-                Text("Add Deck", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text("Add Deck", color = Color.White, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             }
             Spacer(Modifier.height(12.dp))
         }

@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,7 +55,7 @@ fun introPomodoro(
             Text(
                 text = "Pomodoro",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = Color(0xFF1E1E1E)
             )
 
@@ -61,6 +63,7 @@ fun introPomodoro(
                 text = "Stay focused using built-in study sessions.",
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 color = Color(0xFF4A4A4A),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -81,11 +84,11 @@ fun introPomodoro(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text("Next", color = Color.White, fontSize = 16.sp)
+                    Text("Next", color = Color.White, fontSize = 16.sp,fontFamily = FontFamily(Font(R.font.lexend_semibold)))
                 }
 
                 TextButton(onClick = onSkipClick) {
-                    Text("Skip", color = Color(0xFF1E1E1E))
+                    Text("Skip", color = Color(0xFF1E1E1E),fontFamily = FontFamily(Font(R.font.lexend_semibold)))
                 }
             }
         }

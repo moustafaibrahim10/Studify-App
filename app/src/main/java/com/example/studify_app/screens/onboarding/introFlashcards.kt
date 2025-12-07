@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,13 +54,14 @@ fun introFlashcards(
             Text(
                 text = "Flashcards",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = Color(0xFF1E1E1E)
             )
 
             Text(
                 text = "Review smarter with spaced repetition.",
                 fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 textAlign = TextAlign.Center,
                 color = Color(0xFF4A4A4A),
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -81,7 +84,7 @@ fun introFlashcards(
                 Text(
                     text = "Get Started",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.lexend_semibold)),
                     color = Color.White
                 )
             }

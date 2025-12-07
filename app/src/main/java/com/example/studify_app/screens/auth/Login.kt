@@ -13,12 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.studify_app.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,14 +31,12 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
-    // States
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Colors
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF67C090), Color(0xFFE6F4EA))
     )
@@ -44,7 +45,6 @@ fun LoginScreen(
     val errorRed = Color(0xFFD32F2F)
     val subtitleColor = Color(0xFF666666)
 
-    // Validation function
     fun validateInput(): Boolean {
         return when {
             email.isBlank() -> {
@@ -75,15 +75,14 @@ fun LoginScreen(
         if (validateInput()) {
             isLoading = true
 
-            // EXPECT onLoginClick to return true/false
             val success = onLoginClick(email, password)
 
             if (!success) {
-                // login failed
+
                 errorMessage = "Incorrect email or password"
                 isLoading = false
             } else {
-                // login success
+
                 isLoading = false
             }
         }
@@ -100,23 +99,22 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Header
+
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
                 text = "Studify",
-                fontWeight = FontWeight.Bold,
                 fontSize = 28.sp,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = darkText
             )
 
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Welcome Title
             Text(
                 text = "Welcome Back!",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = darkText
             )
 
@@ -125,47 +123,58 @@ fun LoginScreen(
             Text(
                 text = "Sign in to continue your journey",
                 fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 color = subtitleColor
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Error Message
             errorMessage?.let { message ->
                 Text(
                     text = message,
                     color = errorRed,
                     fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 )
             }
 
-            // Email Field
             OutlinedTextField(
                 value = email,
                 onValueChange = {
                     email = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Email") },
+                label = { Text("Email",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
+
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password Field
             OutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Password") },
+                label = { Text("Password",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -182,18 +191,28 @@ fun LoginScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Forgot Password
             TextButton(
                 onClick = onForgotPasswordClick,
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
                     "Forgot Password?",
+                    fontFamily = FontFamily(Font(R.font.lexend)),
                     color = darkText,
                     fontSize = 14.sp
                 )
@@ -201,7 +220,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Login Button
             Button(
                 onClick = { performLogin() },
                 colors = ButtonDefaults.buttonColors(
@@ -224,20 +242,20 @@ fun LoginScreen(
                     Text(
                         "Log In",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.lexend_semibold))
                     )
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Register Section
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "Don\'t have an account?",
+                    fontFamily = FontFamily(Font(R.font.lexend)),
                     color = subtitleColor,
                     fontSize = 14.sp
                 )
@@ -252,7 +270,7 @@ fun LoginScreen(
                         "Create an account",
                         color = primaryGreen,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.lexend_semibold))
                     )
                 }
             }
@@ -262,7 +280,6 @@ fun LoginScreen(
     }
 }
 
-// Extension function for email validation
 private fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex()
     return emailRegex.matches(email)

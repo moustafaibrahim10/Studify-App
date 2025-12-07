@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,7 @@ import com.example.data.DataRepository
 import com.example.finalfinalefinal.decks_list
 import com.example.finalfinalefinal.routs
 import com.example.model.Subject
+import com.example.studify_app.R
 
 
 data class SubjectUi(
@@ -72,7 +75,7 @@ fun SubjectsScreen(
                 TopAppBar(
                     title = {
                         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            Text(text = "Subjects", fontWeight = FontWeight.Bold)
+                            Text(text = "Subjects", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
                         }
                     }
                 )
@@ -100,7 +103,7 @@ fun SubjectsScreen(
                     Text(
                         text = "Subjects",
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                         modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
                     )
                 }
@@ -151,9 +154,9 @@ private fun SubjectCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            Text("${subject.currentprogress}%", color = Accent, fontSize = 13.sp)
+            Text("${subject.currentprogress}%", color = Accent, fontSize = 13.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             Spacer(Modifier.height(2.dp))
-            Text(subject.name, fontWeight = FontWeight.Black, fontSize = 18.sp)
+            Text(subject.name, fontWeight = FontWeight.Black, fontSize = 18.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
 
             Spacer(Modifier.height(10.dp))
             LinearProgressIndicator(
@@ -168,8 +171,8 @@ private fun SubjectCard(
 
             Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("${subject.tasks.size} tasks", color = Accent, fontSize = 13.sp)
-                Text("  |  ${subject.decks.sumOf { it.cards.size }} flashcards", color = Accent, fontSize = 13.sp)
+                Text("${subject.tasks.size} tasks", color = Accent, fontSize = 13.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
+                Text("  |  ${subject.decks.sumOf { it.cards.size }} flashcards", color = Accent, fontSize = 13.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             }
         }
     }
@@ -197,9 +200,21 @@ private fun AddSubjectSheet(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text("Name",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
+
             )
 
             Spacer(Modifier.height(12.dp))
@@ -209,7 +224,7 @@ private fun AddSubjectSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color.Black,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
@@ -218,7 +233,7 @@ private fun AddSubjectSheet(
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Accent)
                 ) {
-                    Text("Add")
+                    Text("Add",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
                 }
             }
         }

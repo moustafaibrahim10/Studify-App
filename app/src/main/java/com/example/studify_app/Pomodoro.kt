@@ -45,7 +45,7 @@ class Pomodoro : ComponentActivity() {
 @Composable
 fun PomodoroScreen(navController: NavController) {
     var hours by remember { mutableStateOf(0) }
-    var minutes by remember { mutableStateOf(0) }
+    var minutes by remember { mutableStateOf(25) }
     var seconds by remember { mutableStateOf(0) }
 
     Column(
@@ -66,15 +66,6 @@ fun PomodoroScreen(navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center),
                 textAlign = TextAlign.Center
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.profile_icon),
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(32.dp)
-                    .align(Alignment.CenterEnd)
-                    .clickable { navController.navigate("profile") }
             )
         }
 
@@ -133,7 +124,7 @@ fun PomodoroScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularNumberWheel(range = 0..23) { hours = it }
+                CircularWheel(range = 0..23) { hours = it }
                 MinutesWheel { minutes = it }
                 SecondsWheel { seconds = it }
             }
@@ -162,12 +153,6 @@ fun PomodoroScreen(navController: NavController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CircularNumberWheel(range: IntRange, onValueChange: (Int) -> Unit) {
-    CircularWheel(range = range, onValueChange = onValueChange)
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
 fun MinutesWheel(onValueChange: (Int) -> Unit) {
     CircularWheel(range = 0..59, onValueChange = onValueChange)
 }
@@ -188,7 +173,7 @@ fun CircularWheel(range: IntRange, onValueChange: (Int) -> Unit) {
 
     Box(
         modifier = Modifier
-            .size(width = 110.dp, height = 55.dp)
+            .size(width = 100.dp, height = 60.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFE8F2F0)),
         contentAlignment = Alignment.Center
@@ -198,13 +183,14 @@ fun CircularWheel(range: IntRange, onValueChange: (Int) -> Unit) {
             flingBehavior = snapping,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 10.dp)
-        ) {
+            contentPadding = PaddingValues(vertical = 12.dp)
+        )
+        {
             items(repeatedList.size) { index ->
                 Text(
                     text = repeatedList[index].toString().padStart(2, '0'),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                     modifier = Modifier
                         .height(35.dp)
                         .wrapContentSize()
@@ -213,11 +199,140 @@ fun CircularWheel(range: IntRange, onValueChange: (Int) -> Unit) {
         }
     }
 
-    LaunchedEffect(listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
-            val idx = listState.firstVisibleItemIndex
-            val value = repeatedList[idx % range.count()]
-            onValueChange(value)
-        }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+
+                if (visibleItems.isNotEmpty()) {
+
+                    val layoutInfo = listState.layoutInfo
+
+                    val center = layoutInfo.viewportStartOffset +
+                            (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+                    val centeredItem = visibleItems.minByOrNull { item ->
+                        kotlin.math.abs((item.offset + item.size / 2) - center)
+                    }
+                    centeredItem?.let { item ->
+                        val count = range.count()
+                        val actualValue = range.first + (item.index % count)
+                        onValueChange(actualValue)
+                    }
+                }
+            }
     }
 }
+
+//    LaunchedEffect(listState.isScrollInProgress) {
+//        if (!listState.isScrollInProgress) {
+//            val idx = listState.firstVisibleItemIndex
+//            val value = repeatedList[idx % range.count()]
+//            onValueChange(value)
+//        }
+//    }
+
+
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun CircularWheel(range: IntRange, initialValue : Int , onValueChange: (Int) -> Unit) {
+//    val count = range.count()
+//    val initialIndex = remember(initialValue) {
+//        val mid = Int.MAX_VALUE / 2
+//        val reminder = mid % count
+//        mid - reminder + (initialValue - range.first)
+//    }
+//    val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
+//    val snapping = rememberSnapFlingBehavior(listState)
+//
+//    LaunchedEffect(listState) {
+//        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+//            .collect { visibleItems ->
+//                if (visibleItems.isNotEmpty()) {
+//                    val center = listState.layoutInfo.viewportStartOffset +
+//                            listState.layoutInfo.viewportEndOffset / 2
+//
+//                    val centeredItem = visibleItems.minByOrNull { item ->
+//                        kotlin.math.abs((item.offset + item.size / 2) - center)
+//                    }
+//
+//                    centeredItem?.let {
+//                        val actualValue = range.first + (it.index % count)
+//                        onValueChange(actualValue)
+//                    }
+//                }
+//            }
+//    }
+//
+//    Box(
+//        modifier = Modifier
+//            .size(width = 100.dp, height = 60.dp)
+//            .clip(RoundedCornerShape(12.dp))
+//            .background(Color(0xFFE8F2F0)),
+//        contentAlignment = Alignment.Center
+//    ){
+//        LazyColumn(
+//            state = listState,
+//            flingBehavior = snapping,
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            modifier = Modifier.fillMaxSize(),
+//            contentPadding = PaddingValues(vertical = 12.dp)
+//        ){
+//            items(Int.MAX_VALUE){ index ->
+//                val number = range.first + (index % count)
+//                Text(
+//                    text = number.toString().padStart(2, '0'),
+//                    style = MaterialTheme.typography.titleLarge,
+//                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+//                    color = Color.Black,
+//                    modifier = Modifier
+//                        .height(35.dp)
+//                        .wrapContentSize(Alignment.Center)
+//                )
+//            }
+//        }
+//    }
+//
+//}
+
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun MinutesWheel(onValueChange: (Int) -> Unit) {
+//    CircularWheel(range = 0..59, onValueChange = onValueChange)
+//}
+//
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun SecondsWheel(onValueChange: (Int) -> Unit) {
+//    CircularWheel(range = 0..59, onValueChange = onValueChange)
+//}
+//
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun CircularWheel(range: IntRange, onValueChange: (Int) -> Unit) {
+//    val repeatedList = remember { range.toList() + range.toList() + range.toList() }
+//    val centerIndex = range.count()
+//    val listState = rememberLazyListState(initialFirstVisibleItemIndex = centerIndex)
+//    val snapping = rememberSnapFlingBehavior(listState)
+//
+// {
+        // {
+//            items(repeatedList.size) { index ->
+//                Text(
+//                    text = repeatedList[index].toString().padStart(2, '0'),
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier
+//                        .height(35.dp)
+//                        .wrapContentSize()
+//                )
+//            }
+//        }
+//    }
+//
+//    LaunchedEffect(listState.isScrollInProgress) {
+//        if (!listState.isScrollInProgress) {
+//            val idx = listState.firstVisibleItemIndex
+//            val value = repeatedList[idx % range.count()]
+//            onValueChange(value)
+//        }
+//    }
+//}

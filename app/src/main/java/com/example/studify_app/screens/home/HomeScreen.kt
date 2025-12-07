@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +80,7 @@ fun HeaderSection() {
     ) {
         Text(
             text = "Studify",
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
             fontSize = 24.sp,
             color = Color(0xFF1E1E1E)
         )
@@ -101,13 +103,14 @@ fun GreetingSection(userName: String) {
         Text(
             text = "Hi, $userName!",
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
             color = Color(0xFF1E1E1E)
         )
 
         Text(
             text = "Let's make today productive and fun!",
             fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)),
             color = Color(0xFF666666)
         )
     }
@@ -128,7 +131,12 @@ fun ActionButtonsSection(navController: NavController) {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090)),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Start Pomodoro", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text(
+                "Start Pomodoro",
+                color = Color.White,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
+            )
         }
 
         Button(
@@ -139,7 +147,7 @@ fun ActionButtonsSection(navController: NavController) {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090)),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Add Task",  color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text("Add Task",  color = Color.White, fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
         }
     }
 }
@@ -158,7 +166,7 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = "Next Task",
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                 fontSize = 18.sp,
                 color = Color(0xFF1E1E1E)
             )
@@ -166,11 +174,11 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
             Spacer(modifier = Modifier.height(12.dp))
 
             if (nextTask != null) {
-                Text(nextTask.title, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                Text(nextTask.title, fontWeight = FontWeight.Medium, fontSize = 16.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(nextTask.due.toString(), fontSize = 14.sp, color = Color(0xFF666666))
+                Text(nextTask.due.toString(), fontSize = 14.sp, color = Color(0xFF666666),fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
             } else {
-                Text("No tasks added", fontSize = 14.sp, color = Color.Gray)
+                Text("No tasks added", fontSize = 14.sp, color = Color.Gray,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
             }
         }
     }
@@ -184,7 +192,7 @@ fun UpcomingTasksSection(navController: NavController) {
     ) {
         Text(
             text = "Upcoming Tasks",
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
             fontSize = 18.sp,
             color = Color(0xFF1E1E1E),
             modifier = Modifier.padding(bottom = 16.dp)
@@ -214,10 +222,10 @@ fun TaskItem(title: String, subject: String, due: String, navController: NavCont
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("# ", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50), fontSize = 16.sp)
-                    Text(title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF1E1E1E))
+                    Text("# ", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)), color = Color(0xFF4CAF50), fontSize = 16.sp)
+                    Text(title, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), fontSize = 16.sp, color = Color(0xFF1E1E1E))
                 }
-                Text(due, color = Color(0xFF666666), fontSize = 14.sp, modifier = Modifier.padding(start = 16.dp))
+                Text(due, color = Color(0xFF666666), fontSize = 14.sp, modifier = Modifier.padding(start = 16.dp),fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
             }
         }
     }
@@ -245,13 +253,14 @@ fun FlashCardsSection(navController: NavController, deckCount: Int) {
             Column {
                 Text(
                     text = "Flashcards",
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                     fontSize = 16.sp,
                     color = Color(0xFF1E1E1E)
                 )
 
                 Text(
                     text = "$deckCount Decks",
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                     color = Color(0xFF666666),
                     fontSize = 14.sp
                 )
@@ -275,22 +284,21 @@ fun ProgressSection(navController: NavController) {
         ) {
             Text(
                 text = "Weekly Progress Snapshot",
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                 fontSize = 18.sp,
                 color = Color(0xFF1E1E1E)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Study Hours
-            Text("Study Hours", color = Color.Gray, fontSize = 14.sp)
+            Text("Study Hours",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)), color = Color.Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("12", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF1E1E1E))
+            Text("12", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)), fontSize = 32.sp, color = Color(0xFF1E1E1E))
             Text(
                 text = "This Week: +10%",
                 color = Color(0xFF4CAF50),
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -322,7 +330,7 @@ fun ProgressSection(navController: NavController) {
                             text = day,
                             fontSize = 12.sp,
                             color = Color.Gray,
-                            fontWeight = FontWeight.Medium
+                            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
                         )
                     }
                 }

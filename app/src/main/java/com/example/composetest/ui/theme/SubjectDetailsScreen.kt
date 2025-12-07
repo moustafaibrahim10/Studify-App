@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +31,7 @@ import com.example.data.DataRepository
 import com.example.finalfinalefinal.routs
 import com.example.model.Deck
 import com.example.model.Task
+import com.example.studify_app.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -65,7 +68,7 @@ fun SubjectDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(subjectName, fontWeight = FontWeight.Bold) },
+                title = { Text(subjectName, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Outlined.ArrowBack, contentDescription = "Back") } }
             )
         },
@@ -81,7 +84,7 @@ fun SubjectDetailsScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White).padding(16.dp)
                 ) {
-                    Text("Progress: ${subject?.currentprogress}%", fontWeight = FontWeight.SemiBold)
+                    Text("Progress: ${subject?.currentprogress}%", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                     Spacer(Modifier.height(8.dp))
                     LinearProgressIndicator(
                         progress = ((subject?.currentprogress ?: 0) / 100f),
@@ -102,7 +105,7 @@ fun SubjectDetailsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Tasks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("Tasks", fontSize = 18.sp, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                     OutlinedButton(
                         onClick = { showAddTaskSheet = true },
                         shape = RoundedCornerShape(10.dp)
@@ -138,12 +141,12 @@ fun SubjectDetailsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Flashcards Decks", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("Flashcards Decks", fontSize = 18.sp, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                     OutlinedButton(
                         onClick = { showAddDeckSheet = true },
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Add Deck")
+                        Text("Add Deck",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                     }
                 }
             }
@@ -157,7 +160,7 @@ fun SubjectDetailsScreen(
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = CardTint),
                     shape = RoundedCornerShape(12.dp)
-                ) { Text("Start Pomodoro", color = Color.Black, fontWeight = FontWeight.SemiBold) }
+                ) { Text("Start Pomodoro", color = Color.Black, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) }
             }
         }
     }
@@ -199,8 +202,8 @@ private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () 
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(task.title, fontWeight = FontWeight.SemiBold)
-                Text(task.due.toString(), fontSize = 12.sp, color = Color(0xFF3AA77E))
+                Text(task.title, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
+                Text(task.due.toString(), fontSize = 12.sp, color = Color(0xFF3AA77E),fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             }
             Checkbox(
                 checked = task.isDone,
@@ -217,7 +220,7 @@ private fun DeckRow(deck: Deck, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("${deck.title} - ${deck.cards.size} cards", fontWeight = FontWeight.Medium)
+            Text("${deck.title} - ${deck.cards.size} cards", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(Color(0xFFF1F5F4)),
                 contentAlignment = Alignment.Center
             ) { Icon(Icons.Outlined.ChevronRight, contentDescription = null) }
@@ -264,7 +267,7 @@ fun AddTaskSheet(
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Outlined.Close, contentDescription = "Close")
                 }
-                Text("Add Task", style = MaterialTheme.typography.titleMedium)
+                Text("Add Task", style = MaterialTheme.typography.titleMedium,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 Spacer(Modifier.size(40.dp))
             }
 
@@ -272,9 +275,21 @@ fun AddTaskSheet(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
+                label = { Text("Title",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
+
             )
 
             // Deadline Field
@@ -282,7 +297,7 @@ fun AddTaskSheet(
                 OutlinedTextField(
                     value = deadline,
                     onValueChange = {},
-                    label = { Text("Deadline") },
+                    label = { Text("Deadline",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
                     readOnly = true,
                     singleLine = true,
                     trailingIcon = {
@@ -290,7 +305,18 @@ fun AddTaskSheet(
                             Icon(Icons.Outlined.DateRange, contentDescription = "Select Date")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        cursorColor = Color.Black,
+                        focusedIndicatorColor = Color.Black,
+                        unfocusedIndicatorColor = Color.Gray,
+                        focusedLabelColor = Color.Black
+                    )
+
                 )
 
                 // Transparent clickable layer
@@ -313,7 +339,7 @@ fun AddTaskSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = MintButton),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Add Task", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text("Add Task", color = Color.White, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
             }
 
             Spacer(Modifier.height(12.dp))
@@ -334,12 +360,12 @@ fun AddTaskSheet(
                         showDatePicker = false
                     }
                 ) {
-                    Text("OK", fontWeight = FontWeight.Bold)
+                    Text("OK", fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 }
             }
         ) {
@@ -374,13 +400,23 @@ fun AddDeckSheet(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Add Deck", style = MaterialTheme.typography.titleMedium)
+            Text("Add Deck", style = MaterialTheme.typography.titleMedium,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
 
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Deck Name") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Deck Name",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(Modifier.height(16.dp))
@@ -390,7 +426,7 @@ fun AddDeckSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
-                    Text("Cancel")
+                    Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
@@ -398,7 +434,7 @@ fun AddDeckSheet(
                     enabled = name.isNotBlank(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Add")
+                    Text("Add",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
                 }
             }
         }

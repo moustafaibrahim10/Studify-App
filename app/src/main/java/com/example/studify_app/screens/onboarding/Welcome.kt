@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,6 +62,7 @@ fun WelcomeScreen(
                 text = "Studify",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = Color(0xFF1E1E1E),
                 textAlign = TextAlign.Center
             )
@@ -67,9 +70,10 @@ fun WelcomeScreen(
             Text(
                 text = "Organize your study life effortlessly.",
                 fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 color = Color(0xFF4A4A4A),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -88,7 +92,7 @@ fun WelcomeScreen(
                 Text(
                     text = "Get Started",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontFamily = FontFamily(Font(R.font.lexend_semibold))
                 )
             }
 

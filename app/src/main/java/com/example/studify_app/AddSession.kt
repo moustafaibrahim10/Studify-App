@@ -76,7 +76,7 @@ fun AddSessionScreen(navController: NavHostController) {
         TextField(
             value = "",
             onValueChange = {},
-            label = { Text("Title", color = textColor) },
+            label = { Text("Title", color = textColor,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
             textStyle = TextStyle(color = textColor),
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,7 +100,7 @@ fun AddSessionScreen(navController: NavHostController) {
         TextField(
             value = "",
             onValueChange = {},
-            label = { Text("Subject", color = textColor) },
+            label = { Text("Subject", color = textColor,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
             textStyle = TextStyle(color = textColor),
             modifier = Modifier
                 .fillMaxWidth()
@@ -124,7 +124,7 @@ fun AddSessionScreen(navController: NavHostController) {
         TextField(
             value = "",
             onValueChange = {},
-            label = { Text("Due Date", color = textColor) },
+            label = { Text("Due Date", color = textColor,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) },
             textStyle = TextStyle(color = textColor),
             modifier = Modifier
                 .fillMaxWidth()
@@ -156,7 +156,7 @@ fun AddSessionScreen(navController: NavHostController) {
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = textColor)
         ) {
-            Text("Add Session", color = Color.White)
+            Text("Add Session", color = Color.White,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
         }
     }
 }

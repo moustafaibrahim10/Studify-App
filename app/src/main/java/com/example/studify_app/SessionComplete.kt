@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,7 +58,7 @@ fun CompleteSessionScreen(navController: NavController) {
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                     textAlign = TextAlign.Center
                 )
             )
@@ -82,31 +84,21 @@ fun CompleteSessionScreen(navController: NavController) {
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
                 ),
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "You studied for 25 minutes.",
-                style = TextStyle(
-                    color = Color(0xFF111111),
-                    fontSize = 15.sp,
-                    lineHeight = 22.sp
-                ),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "That’s one more step toward your goals.",
                 style = TextStyle(
                     color = Color(0xFF111111),
                     fontSize = 15.sp,
-                    lineHeight = 22.sp
+                    lineHeight = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                 ),
                 textAlign = TextAlign.Center
             )
@@ -117,7 +109,8 @@ fun CompleteSessionScreen(navController: NavController) {
                 text = "Would you like to add flashcards from this session?",
                 style = TextStyle(
                     color = Color(0xFF67C090),
-                    fontSize = 15.sp
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                 ),
                 textAlign = TextAlign.Center
             )
@@ -137,7 +130,7 @@ fun CompleteSessionScreen(navController: NavController) {
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF67C090))
             ) {
-                Text("Add Flashcards", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Add Flashcards", color = Color.White, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -150,7 +143,7 @@ fun CompleteSessionScreen(navController: NavController) {
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF1F5F4))
             ) {
-                Text("Back to Home", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Back to Home", color = Color.Black, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
             }
         }
     }

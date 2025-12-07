@@ -13,12 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.studify_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +29,6 @@ fun RegisterScreen(
     onRegisterClick: (name: String, email: String, password: String) -> Unit,
     onLoginClick: () -> Unit
 ) {
-    // States
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -36,7 +38,6 @@ fun RegisterScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Colors
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF67C090), Color(0xFFE6F4EA))
     )
@@ -45,7 +46,6 @@ fun RegisterScreen(
     val errorRed = Color(0xFFD32F2F)
     val subtitleColor = Color(0xFF666666)
 
-    // Validation function
     fun validateInput(): Boolean {
         return when {
             name.isBlank() -> {
@@ -106,12 +106,12 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Header
+
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
                 text = "Studify",
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 fontSize = 28.sp,
                 color = darkText
             )
@@ -122,7 +122,7 @@ fun RegisterScreen(
             Text(
                 text = "Create Your Account",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.lexend_bold)),
                 color = darkText
             )
 
@@ -131,12 +131,12 @@ fun RegisterScreen(
             Text(
                 text = "Join us and organize your study life",
                 fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 color = subtitleColor
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Error Message
             errorMessage?.let { message ->
                 Text(
                     text = message,
@@ -148,46 +148,63 @@ fun RegisterScreen(
                 )
             }
 
-            // Name Field - بدون colors مخصصة
             OutlinedTextField(
                 value = name,
                 onValueChange = {
                     name = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Full Name") },
+                label = { Text("Full Name",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email Field - بدون colors مخصصة
             OutlinedTextField(
                 value = email,
                 onValueChange = {
                     email = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Email") },
+                label = { Text("Email",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password Field
             OutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Password") },
+                label = { Text("Password",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -204,19 +221,28 @@ fun RegisterScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Confirm Password Field
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
                     if (errorMessage != null) errorMessage = null
                 },
-                label = { Text("Confirm Password") },
+                label = { Text("Confirm Password",fontFamily = FontFamily(Font(R.font.lexend))) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -233,14 +259,24 @@ fun RegisterScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedLabelColor = Color.Black
+                )
             )
 
-            // Password requirements hint
             Text(
                 text = "Password must be at least 6 characters",
                 color = subtitleColor,
                 fontSize = 12.sp,
+                fontFamily = FontFamily(Font(R.font.lexend)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
@@ -248,7 +284,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sign Up Button
             Button(
                 onClick = { performRegistration() },
                 colors = ButtonDefaults.buttonColors(
@@ -272,14 +307,13 @@ fun RegisterScreen(
                     Text(
                         "Sign Up",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.lexend_semibold))
                     )
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Login Section
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
@@ -287,6 +321,7 @@ fun RegisterScreen(
                 Text(
                     text = "Already have an account?",
                     color = subtitleColor,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
                     fontSize = 14.sp
                 )
 
@@ -300,7 +335,7 @@ fun RegisterScreen(
                         "Log in",
                         color = primaryGreen,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.lexend_semibold))
                     )
                 }
             }
@@ -310,7 +345,6 @@ fun RegisterScreen(
     }
 }
 
-// Extension function for email validation
 private fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex()
     return emailRegex.matches(email)
