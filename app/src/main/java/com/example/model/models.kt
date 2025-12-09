@@ -15,7 +15,10 @@ data class User(
     val decks: MutableList<Deck> = mutableStateListOf(),
 
     var notificationsEnabled: Boolean = true,
-    var soundEnabled: Boolean = true
+    var soundEnabled: Boolean = true,
+
+    var totalsessions: Float = 0f,
+    var totaltime: Float = 0f
 )
 
 

@@ -100,8 +100,8 @@ object DataRepository {
             password = "123456",
             subjects = allSubjects.toMutableStateList(),
             tasks = (mathTasks + physicsTasks + csTasks + englishTasks).toMutableStateList(),
-            decks = mutableStateListOf(mathDeck, physicsDeck, csDeck, csDeck2, englishDeck)
-        )
+            decks = mutableStateListOf(mathDeck, physicsDeck, csDeck, csDeck2, englishDeck),
+            totalsessions = 10f)
 
         users.add(dummy)
     }

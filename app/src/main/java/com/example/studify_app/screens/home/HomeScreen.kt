@@ -173,7 +173,7 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
             )
 
             Text(
-                text = if (tasks.size!=0) "${tasks.size} Tasks" else "1 task ",
+                text = if (tasks.size!=1) "${tasks.size} Tasks" else "1 task ",
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                 color = Color(0xFF666666),
                 fontSize = 14.sp
@@ -257,7 +257,7 @@ fun FlashCardsSection(navController: NavController, deckCount: Int) {
                 )
 
                 Text(
-                    text = "$deckCount Decks",
+                    text = if (deckCount!=1) "${deckCount} Decks" else "1 Deck ",
                     fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                     color = Color(0xFF666666),
                     fontSize = 14.sp

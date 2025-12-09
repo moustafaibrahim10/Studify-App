@@ -53,13 +53,15 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
         }
         if (timeLeft == 0) {
 
-            if (user.notificationsEnabled) {
-                NotificationHelper.showSessionCompleteNotification(context)
-            }
+//            if (user.notificationsEnabled) {
+//                NotificationHelper.showSessionCompleteNotification(context)
+//            }
 
             if (user.soundEnabled) {
                 SoundHelper.playEndSound(context)
             }
+
+            user.totalsessions+=0.5f
 
             navController.navigate("sessionComplete") {
                 popUpTo("Pomodoro") { inclusive = false }
