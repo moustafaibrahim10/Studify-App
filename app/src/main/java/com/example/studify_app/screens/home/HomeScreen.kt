@@ -48,7 +48,8 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
         }
         item {
-            GreetingSection(currentUser?.username ?: "Student")
+            val firstName = currentUser?.username?.split(" ")?.firstOrNull() ?: "Student"
+            GreetingSection(firstName)
             Spacer(modifier = Modifier.height(24.dp))
         }
         item {
@@ -165,21 +166,18 @@ fun GoalsCard(navController: NavController, tasks: List<Task>) {
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
-                text = "Next Task",
+                text = "Tasks",
                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                 fontSize = 18.sp,
                 color = Color(0xFF1E1E1E)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            if (nextTask != null) {
-                Text(nextTask.title, fontWeight = FontWeight.Medium, fontSize = 16.sp,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(nextTask.due.toString(), fontSize = 14.sp, color = Color(0xFF666666),fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
-            } else {
-                Text("No tasks added", fontSize = 14.sp, color = Color.Gray,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans)))
-            }
+            Text(
+                text = if (tasks.size!=1) "${tasks.size} Tasks" else "1 task ",
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+                color = Color(0xFF666666),
+                fontSize = 14.sp
+            )
         }
     }
 }
@@ -253,13 +251,13 @@ fun FlashCardsSection(navController: NavController, deckCount: Int) {
             Column {
                 Text(
                     text = "Flashcards",
-                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                     fontSize = 16.sp,
                     color = Color(0xFF1E1E1E)
                 )
 
                 Text(
-                    text = "$deckCount Decks",
+                    text = if (deckCount!=1) "${deckCount} Decks" else "1 Deck ",
                     fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                     color = Color(0xFF666666),
                     fontSize = 14.sp

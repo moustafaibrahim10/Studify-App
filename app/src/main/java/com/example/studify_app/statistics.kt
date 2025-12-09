@@ -55,11 +55,8 @@ fun StatisticsScreen(navController: NavHostController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(routs.deckDetails) {
-                            popUpTo(routs.statisticsScreen) {
-                                inclusive = true
-                            }
-                        }
+                        navController.popBackStack()
+                        navController.popBackStack()
 
                     }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "رجوع")

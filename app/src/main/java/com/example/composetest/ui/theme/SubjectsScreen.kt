@@ -5,7 +5,9 @@ package com.example.composetest.ui.theme
 import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -109,11 +111,28 @@ fun SubjectsScreen(
                 }
 
                 items(subjects) { subject ->
-                    SubjectCard(
-                        subject = subject,
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onSubjectClick(subject) }
-                    )
+
+                        var showDeleteDialog by remember { mutableStateOf(false) }
+
+                        if (showDeleteDialog) {
+                            DeleteSubjectDialog(
+                                subject = subject,
+                                onDismiss = { showDeleteDialog = false },
+                                onConfirm = {
+                                    deleteSubjectCompletely(subject)
+                                    showDeleteDialog = false
+                                }
+                            )
+                        }
+
+                        SubjectCard(
+                            subject = subject,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { onSubjectClick(subject) },
+                            onLongPress = { showDeleteDialog = true }
+                        )
+
+
                 }
 
                 item { Spacer(Modifier.height(72.dp)) }
@@ -132,22 +151,28 @@ fun SubjectsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SubjectCard(
     subject: Subject,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onLongPress: () -> Unit
+
 ) {
     val doneCount = subject?.tasks?.count { it.isDone } ?: 0
     val total = subject?.tasks?.size ?: 0
     subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
 
     ElevatedCard(
-        onClick = onClick,
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
+       colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.5.dp),
-        modifier = modifier.clip(RoundedCornerShape(16.dp))
-    ) {
+    modifier = modifier
+        .clip(RoundedCornerShape(16.dp))
+        .combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongPress
+        )    ) {
         Column(
             modifier = Modifier
                 .background(CardTint)
@@ -239,3 +264,40 @@ private fun AddSubjectSheet(
         }
     }
 }
+
+
+
+
+
+@Composable
+fun DeleteSubjectDialog(
+    subject: Subject,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete ${subject.name}?") },
+        text = { Text("This will remove the subject, all its tasks, and all its decks.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) { Text("Delete", color = Color.Red) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color= Accent) }
+        }
+    )
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun deleteSubjectCompletely(subject: Subject) {
+    val user = DataRepository.currentUser ?: return
+
+    user.tasks.removeAll(subject.tasks)
+
+    user.decks.removeAll(subject.decks)
+
+    DataRepository.removeSubject(subject)
+}
+

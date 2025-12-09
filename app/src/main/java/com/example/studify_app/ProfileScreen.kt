@@ -42,11 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.data.DataRepository
+import com.example.data.DataRepository.currentUser
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProfilePic(navController: NavHostController){
+fun ProfilePic(navController: NavHostController) {
     val currentUser = DataRepository.currentUser!!
     val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
 
@@ -56,10 +57,12 @@ fun ProfilePic(navController: NavHostController){
     val assignmentsProgress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
 
 
-    Column (
-        modifier = Modifier.fillMaxWidth().background(Color.White)
-        ,horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,7 +106,9 @@ fun ProfilePic(navController: NavHostController){
         Image(
             painter = painterResource(id = R.drawable.profileowl),
             contentDescription = "Profile Pic",
-            modifier = Modifier.size(128.dp).clip(CircleShape)
+            modifier = Modifier
+                .size(128.dp)
+                .clip(CircleShape)
         )
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -114,6 +119,12 @@ fun ProfilePic(navController: NavHostController){
             fontSize = 22.sp,
             color = Color(0XFF000000)
         )
+        Text(
+            text = currentUser?.email ?: "",
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+            fontSize = 16.sp,
+            color = Color(0xFF2F7D66)
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -122,7 +133,7 @@ fun ProfilePic(navController: NavHostController){
                 .fillMaxSize()
                 .background(Color.White)
                 .padding(horizontal = 20.dp)
-        ){
+        ) {
             Text(
                 text = "Weekly Goals",
                 fontSize = 22.sp,
@@ -134,20 +145,22 @@ fun ProfilePic(navController: NavHostController){
             GoalItem(
                 icon = R.drawable.pomodoroic,
                 title = "Pomodoro",
-                description = "Complete 10 Pomodoro sessions",
-                progress = 0.8f
+                description = "you completed ${currentUser.totalsessions.toInt()} sessions today",
+                progress = -1f
             )
 
             GoalItem(
                 icon = R.drawable.assic,
                 title = "Assignments",
-                description = "Finish ${(assignmentsProgress*100).toInt()}% of the assignments",
+                description = "Finish ${(assignmentsProgress * 100).toInt()}% of the assignments",
                 progress = assignmentsProgress
             )
 
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GoalItem(icon: Int, title: String, description: String, progress: Float) {
     Row(
@@ -188,26 +201,29 @@ fun GoalItem(icon: Int, title: String, description: String, progress: Float) {
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(6.dp))
-            LinearProgressIndicator(
-                progress = {progress},
-                color = Color(0xFF4D9987),
-                trackColor = Color(0xFFE0F2EF),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(15.dp))
-            )
+            if (progress >= 0) {
+                LinearProgressIndicator(
+                    progress = { progress },
+                    color = Color(0xFF4D9987),
+                    trackColor = Color(0xFFE0F2EF),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = "${(progress * 100).toInt()}%",
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-            color = Color(0xFF4D9987),
-            modifier = Modifier.padding(bottom = 10.dp,end = 10.dp)
-        )
+        if (progress >= 0) {
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+                color = Color(0xFF4D9987),
+                modifier = Modifier.padding(bottom = 10.dp, end = 10.dp)
+            )
+        }
     }
 }
 

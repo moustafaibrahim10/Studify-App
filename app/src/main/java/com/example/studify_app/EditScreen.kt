@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -110,6 +111,13 @@ fun EditScr(navController: NavController) {
             fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
             fontSize = 22.sp,
             color = Color.Black
+        )
+
+        Text(
+            text = user?.email ?: "",
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+            fontSize = 16.sp,
+            color = Color(0xFF2F7D66)
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -213,32 +221,35 @@ fun LabeledField(
     isPassword: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
-    Text(
-        text = label,
-        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
-        fontSize = 16.sp,
-        modifier = Modifier.padding(horizontal = 24.dp)
-    )
-
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 5.dp),
-        singleLine = true,
-        shape = RoundedCornerShape(10.dp),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text
-        ),
-        colors = TextFieldDefaults.colors(
-            cursorColor = Color.Black,
-            focusedContainerColor = Color(0xFFE8F2F0),
-            unfocusedContainerColor = Color(0xFFE8F2F0),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+    Column {
+        Text(
+            text = label,
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+            fontSize = 16.sp,
+            modifier = Modifier.padding(horizontal = 24.dp),
+            textAlign = TextAlign.Start
         )
-    )
+
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 5.dp),
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text
+            ),
+            colors = TextFieldDefaults.colors(
+                cursorColor = Color.Black,
+                focusedContainerColor = Color(0xFFE8F2F0),
+                unfocusedContainerColor = Color(0xFFE8F2F0),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            )
+        )
+    }
+
+
 }
-
-

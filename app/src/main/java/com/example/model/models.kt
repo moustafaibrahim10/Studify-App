@@ -12,7 +12,13 @@ data class User(
     var password: String,
     val subjects: MutableList<Subject> = mutableStateListOf(),
     val tasks: MutableList<Task> = mutableStateListOf(),
-    val decks: MutableList<Deck> = mutableStateListOf()
+    val decks: MutableList<Deck> = mutableStateListOf(),
+
+    var notificationsEnabled: Boolean = true,
+    var soundEnabled: Boolean = true,
+
+    var totalsessions: Float = 0f,
+    var totaltime: Float = 0f
 )
 
 
