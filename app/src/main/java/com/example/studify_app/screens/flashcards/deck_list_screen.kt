@@ -124,7 +124,7 @@ fun decks_list(
 
                 val trimmedTitle = title.trim()
                 val trimmedSubject = subject.trim()
-                
+
 
                 val newDeck = Deck(
                     title = trimmedTitle,

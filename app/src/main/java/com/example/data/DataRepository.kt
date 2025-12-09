@@ -187,4 +187,15 @@ object DataRepository {
         val deck = getDeckByTitle(deckName)
         deck?.cards?.add(Flashcard(question, answer))
     }
+
+
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        currentUser?.notificationsEnabled = enabled
+    }
+
+    fun setSoundEnabled(enabled: Boolean) {
+        currentUser?.soundEnabled = enabled
+    }
+
 }

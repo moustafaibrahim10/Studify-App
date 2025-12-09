@@ -1,8 +1,10 @@
 package com.example.studify_app
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -26,10 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.NotificationHelper
+import com.example.SoundHelper
+import com.example.data.DataRepository
 import kotlinx.coroutines.delay
-
+@androidx.annotation.RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CounterScreen(navController: NavController, totalTime: Int) {
+
+    val context = LocalContext.current
+    val user = DataRepository.currentUser!!
+
     var timeLeft by remember { mutableStateOf(totalTime) }
     var isRunning by remember { mutableStateOf(true) }
 
@@ -41,10 +52,20 @@ fun CounterScreen(navController: NavController, totalTime: Int) {
             }
         }
         if (timeLeft == 0) {
+
+            if (user.notificationsEnabled) {
+                NotificationHelper.showSessionCompleteNotification(context)
+            }
+
+            if (user.soundEnabled) {
+                SoundHelper.playEndSound(context)
+            }
+
             navController.navigate("sessionComplete") {
                 popUpTo("Pomodoro") { inclusive = false }
             }
         }
+
     }
 
     val progress = timeLeft / totalTime.toFloat()

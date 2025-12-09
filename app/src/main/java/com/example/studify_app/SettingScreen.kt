@@ -1,10 +1,12 @@
 package com.example.studify_app
 
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.background
@@ -52,21 +54,25 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.data.DataRepository
 
 
-
-
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SettingsScr(navController: NavController , viewModel: PomodoroViewModel) {
 
     val studyLength by viewModel.studyLength.collectAsState()
 
-    var notificationsEnabled by rememberSaveable { mutableStateOf(false) }
-    var soundEffectsEnabled by rememberSaveable { mutableStateOf(false) }
     var shortBreakLength by rememberSaveable { mutableStateOf(5) }
     var longBreakLength by rememberSaveable { mutableStateOf(15) }
     var sessionsBeforeLongBreak by rememberSaveable { mutableStateOf(4) }
+
+
+    val user = DataRepository.currentUser!!
+
+    var notificationsEnabled by rememberSaveable { mutableStateOf(user.notificationsEnabled) }
+    var soundEffectsEnabled by rememberSaveable { mutableStateOf(user.soundEnabled) }
+
 
     Column (
         modifier = Modifier.fillMaxWidth()
@@ -117,13 +123,21 @@ fun SettingsScr(navController: NavController , viewModel: PomodoroViewModel) {
                 title = "Notifications",
                 subtitle = "Enable push notifications for reminders and updates",
                 checked = notificationsEnabled
-            ) { notificationsEnabled = it }
+            ) { enabled ->
+                notificationsEnabled = enabled
+                DataRepository.setNotificationsEnabled(enabled)
+            }
+
 
             ToggleRow(
                 title = "Sound Effects",
                 subtitle = "Enable sound effects for a more engaging experience",
                 checked = soundEffectsEnabled
-            ) { soundEffectsEnabled = it }
+            ) { enabled ->
+                soundEffectsEnabled = enabled
+                DataRepository.setSoundEnabled(enabled)
+            }
+
 
             Spacer(Modifier.height(18.dp))
 
