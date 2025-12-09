@@ -207,6 +207,7 @@ fun MainScaffold(
 
             // Decks & Flashcards
             composable("deckList") { decks_list(navController) }
+
             composable(
                 route = "deckDetails/{deckName}",
                 arguments = listOf(navArgument("deckName") { type = NavType.StringType })
