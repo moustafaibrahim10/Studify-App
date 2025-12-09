@@ -223,7 +223,17 @@ fun MainScaffold(
                 flashCard_testing_screen(navController, deckName)
             }
             composable("flashcardsAnalytics") { flashcardsAnalytics(navController) }
-            composable("statisticsScreen") { StatisticsScreen(navController) }
+            composable(
+                route = "statisticsScreen/{total}/{name}",
+                arguments = listOf(
+                    navArgument("total") { type = NavType.IntType },
+                    navArgument("name") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val total = backStackEntry.arguments?.getInt("total") ?: 0
+                val name = backStackEntry.arguments?.getString("name") ?: ""
+                StatisticsScreen(navController, total, name)
+            }
             composable(
                 route = "AddFlashCard/{deckName}",
                 arguments = listOf(navArgument("deckName") { type = NavType.StringType })

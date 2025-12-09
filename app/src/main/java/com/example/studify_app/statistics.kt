@@ -1,5 +1,7 @@
 package com.example.studify_app
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,14 +33,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.data.DataRepository
 import com.example.finalfinalefinal.routs
 
 val BackgroundMintGreen = Color(0xFFE8F5E9)
 val PrimaryTextColor = Color(0xFF333333)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatisticsScreen(navController: NavHostController) {
+fun StatisticsScreen(navController: NavHostController,total: Int,name: String) {
+    val deck = DataRepository.getDeckByTitle(name)
+        ?: return Text("Deck not found")
+    val percentage = (total.toFloat() / deck.cards.size.toFloat()) * 100
+    val formatted = String.format("%.2f", percentage)
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -81,13 +89,13 @@ fun StatisticsScreen(navController: NavHostController) {
             ) {
                 StatCard(
                     title = "Cards Reviewed Today",
-                    value = "12",
+                    value = "${deck.cards.size}",
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 StatCard(
                     title = "Correct Answers",
-                    value = "10",
+                    value = "$total",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -96,7 +104,7 @@ fun StatisticsScreen(navController: NavHostController) {
 
             StatCard(
                 title = "Accuracy",
-                value = "83%",
+                value = formatted,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -130,9 +138,4 @@ fun StatCard(title: String, value: String, modifier: Modifier) {
             )
         }
     }
-}
-
-@Composable
-fun PreviewStatisticsScreen(navController: NavHostController) {
-    StatisticsScreen(navController)
 }

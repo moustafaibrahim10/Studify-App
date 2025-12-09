@@ -94,7 +94,8 @@ fun deck_details_screen(
                     .padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                startreviewBtn(onstartreviewClick)
+                if(deck.cards.isNotEmpty()){
+                startreviewBtn(onstartreviewClick)}
                 addflashcardBtn {
                     navController.navigate("AddFlashCard/$deckName")
                 }

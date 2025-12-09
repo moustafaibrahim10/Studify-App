@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.data.DataRepository
 import com.example.studify_app.R
 
+var Total_Right: Int=0
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +95,12 @@ fun flashCard_testing_screen(
                     flipBtn { showQuestion = false }
                 } else {
                     rightWrongBtn(
-                        onNext = {
+                         {
+                            showQuestion = true
+                            currentIndex++
+                            Total_Right++
+                        },
+                        {
                             showQuestion = true
                             currentIndex++
                         }
@@ -102,7 +108,7 @@ fun flashCard_testing_screen(
                 }
 
             } else {
-                navController.navigate("statisticsScreen")
+                navController.navigate("statisticsScreen/$Total_Right/$deckname")
             }
         }
     }
@@ -148,7 +154,7 @@ fun flipBtn(onflipclick: () -> Unit){
 
 
 @Composable
-fun rightWrongBtn(onNext: () -> Unit){
+fun rightWrongBtn(onNext1: () -> Unit,onNext2: () -> Unit){
     Box(
         modifier = Modifier.fillMaxWidth().padding(5.dp),
         contentAlignment = Alignment.Center
@@ -160,8 +166,8 @@ fun rightWrongBtn(onNext: () -> Unit){
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            rightBtn(onNext)
-            wrongBtn(onNext)
+            rightBtn(onNext1)
+            wrongBtn(onNext2)
         }
     }
 }
@@ -172,7 +178,7 @@ fun rightWrongBtn(onNext: () -> Unit){
 fun rightBtn(onNext: () -> Unit){
 
         Button(
-            onClick = onNext,
+            onClick = onNext  ,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F0F2)),
         ) {
