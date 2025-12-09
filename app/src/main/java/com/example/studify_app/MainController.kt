@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,8 @@ fun MainScaffold(
     navController: NavHostController,
 ) {
 
+
+    val pomodoroViewModel: PomodoroViewModel = viewModel()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -231,11 +234,11 @@ fun MainScaffold(
 
             // Other screens
             composable("calendar") { DayDetailsScreen(navController) }
-            composable("pomodoro") { PomodoroScreen(navController) }
+            composable("pomodoro") { PomodoroScreen(navController ,pomodoroViewModel) }
             composable("sessionComplete") { CompleteSessionScreen(navController) }
             composable("profile") { ProfilePic(navController) }
             composable("progress") { ProgressScreen(navController) }
-            composable("settings") { SettingsScr(navController) }
+            composable("settings") { SettingsScr(navController ,pomodoroViewModel) }
             composable("edit") { EditScr(navController) }
             composable(
                 "Counter/{totalSeconds}",

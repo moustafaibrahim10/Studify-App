@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,7 +71,7 @@ fun DayDetailsScreen(
                     }
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text("OK",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),)
                 }
             }
         ) {
@@ -88,7 +90,7 @@ fun DayDetailsScreen(
                         Text(
                             selectedDate.format(DateTimeFormatter.ofPattern("MMMM dd")),
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
+                            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                         )
 
                     }
@@ -115,7 +117,7 @@ fun DayDetailsScreen(
 
                     Text(
                         "$done out of $total completed",
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                     )
 
                     Spacer(Modifier.height(8.dp))
@@ -145,7 +147,7 @@ fun DayDetailsScreen(
                     Text(
                         "No tasks on this date.",
                         color = Color.Gray,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))
                     )
                 }
 
@@ -182,21 +184,22 @@ private fun TaskRowCard(task: Task) {
                     task.subject,
                     color = Accent,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)),
                 )
 
                 Text(
                     task.title,
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
                     modifier = Modifier.padding(top = 2.dp)
                 )
 
                 Text(
                     task.due.toString(),
-                    color = Color(0xFF4CAF50),
+                    color = Accent,
                     fontSize = 13.sp,
-                    modifier = Modifier.padding(top = 2.dp)
+                    modifier = Modifier.padding(top = 2.dp),
+                    fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                 )
             }
 
@@ -205,7 +208,12 @@ private fun TaskRowCard(task: Task) {
                 onCheckedChange = { checked ->
                     task.isDone = checked
                     task.completed = checked
-                }
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color(0xFF67C090),
+                    uncheckedColor = Color.Gray,
+                    checkmarkColor = Color.White
+                )
             )
         }
     }

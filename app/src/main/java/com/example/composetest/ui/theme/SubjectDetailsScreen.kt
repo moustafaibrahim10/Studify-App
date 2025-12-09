@@ -32,6 +32,7 @@ import com.example.finalfinalefinal.routs
 import com.example.model.Deck
 import com.example.model.Task
 import com.example.studify_app.R
+import com.example.studify_app.mintGreen
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -110,7 +111,7 @@ fun SubjectDetailsScreen(
                         onClick = { showAddTaskSheet = true },
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Add Task")
+                        Text("Add Task",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), color = Color.Black)
                     }
                 }
             }
@@ -146,7 +147,7 @@ fun SubjectDetailsScreen(
                         onClick = { showAddDeckSheet = true },
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Add Deck",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
+                        Text("Add Deck",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), color = Color.Black)
                     }
                 }
             }
@@ -207,7 +208,12 @@ private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () 
             }
             Checkbox(
                 checked = task.isDone,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color(0xFF67C090),
+                    uncheckedColor = Color.Gray,
+                    checkmarkColor = Color.White
+                )
             )
         }
     }
@@ -228,7 +234,6 @@ private fun DeckRow(deck: Deck, onClick: () -> Unit) {
     }
 }
 
-// --- Add Task Sheet (No Subject Field) ---
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -400,7 +405,7 @@ fun AddDeckSheet(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Add Deck", style = MaterialTheme.typography.titleMedium,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
+            Text("Add Deck", style = MaterialTheme.typography.titleMedium,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), color = Color.Black)
 
             OutlinedTextField(
                 value = name,
@@ -426,15 +431,19 @@ fun AddDeckSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
-                    Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)))
+                    Text("Cancel",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), color = Color.Black)
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
                     onClick = { onConfirm(name) },
                     enabled = name.isNotBlank(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = mintGreen,
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text("Add",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold)))
+                    Text("Add",fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), color = Color.White)
                 }
             }
         }

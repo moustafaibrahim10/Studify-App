@@ -35,6 +35,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -57,12 +58,12 @@ import androidx.navigation.compose.rememberNavController
 
 
 @Composable
-fun SettingsScr(navController: NavController) {
+fun SettingsScr(navController: NavController , viewModel: PomodoroViewModel) {
+
+    val studyLength by viewModel.studyLength.collectAsState()
 
     var notificationsEnabled by rememberSaveable { mutableStateOf(false) }
     var soundEffectsEnabled by rememberSaveable { mutableStateOf(false) }
-
-    var studyLength by rememberSaveable { mutableStateOf(25) }
     var shortBreakLength by rememberSaveable { mutableStateOf(5) }
     var longBreakLength by rememberSaveable { mutableStateOf(15) }
     var sessionsBeforeLongBreak by rememberSaveable { mutableStateOf(4) }
@@ -110,7 +111,7 @@ fun SettingsScr(navController: NavController) {
 
 
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ToggleRow(
                 title = "Notifications",
@@ -137,37 +138,32 @@ fun SettingsScr(navController: NavController) {
 
             ValueSelector(
                 label = "Study Length",
-                sublabel = "Set the duration of your study sessions",
+                sublabel = "Set the duration of your Pomodoro",
                 value = "$studyLength min",
-                onIncrease = { studyLength += 5 },
-                onDecrease = { if(studyLength > 5) studyLength -= 5 }
+                onIncrease = {if (studyLength < 60) viewModel.updateStudyLength(studyLength + 5) },
+                onDecrease = { if(studyLength > 5) viewModel.updateStudyLength(studyLength - 5) }
             )
-            ValueSelector(
-                label = "Short Break Length",
-                sublabel = "Set the duration of your short breaks",
-                value = "$shortBreakLength min",
-                onIncrease = { shortBreakLength += 5 },
-                onDecrease = { if(shortBreakLength > 5) shortBreakLength -= 5 }
-            )
-            ValueSelector(
-                label = "Long Break Length",
-                sublabel = "Set the duration of your long breaks",
-                value = "$longBreakLength min",
-                onIncrease = { longBreakLength += 5 },
-                onDecrease = { if(longBreakLength > 5) longBreakLength -= 5 }
-            )
-            ValueSelector(
-                label = "Sessions Before Long Break",
-                sublabel = "Set the number of study sessions before a long break",
-                value = "$sessionsBeforeLongBreak",
-                onIncrease = { sessionsBeforeLongBreak += 1 },
-                onDecrease = { if(sessionsBeforeLongBreak > 1) sessionsBeforeLongBreak -= 1 }
-            )
-
-
-
-
-
+//            ValueSelector(
+//                label = "Short Break Length",
+//                sublabel = "Set the duration of your short breaks",
+//                value = "$shortBreakLength min",
+//                onIncrease = { shortBreakLength += 5 },
+//                onDecrease = { if(shortBreakLength > 5) shortBreakLength -= 5 }
+//            )
+//            ValueSelector(
+//                label = "Long Break Length",
+//                sublabel = "Set the duration of your long breaks",
+//                value = "$longBreakLength min",
+//                onIncrease = { longBreakLength += 5 },
+//                onDecrease = { if(longBreakLength > 5) longBreakLength -= 5 }
+//            )
+//            ValueSelector(
+//                label = "Sessions Before Long Break",
+//                sublabel = "Set the number of study sessions before a long break",
+//                value = "$sessionsBeforeLongBreak",
+//                onIncrease = { sessionsBeforeLongBreak += 1 },
+//                onDecrease = { if(sessionsBeforeLongBreak > 1) sessionsBeforeLongBreak -= 1 }
+//            )
 
         }
 

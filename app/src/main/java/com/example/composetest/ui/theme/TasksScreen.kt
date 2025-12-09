@@ -34,7 +34,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// ---- UI colors ----
 private val ScreenBg = Color(0xFFF9F9F9)
 private val Accent = Color(0xFF2F7D66)
 private val MintButton = Color(0xFF67C090)
@@ -47,12 +46,10 @@ fun TasksScreen(
 ) {
     val currentUser = DataRepository.currentUser!!
 
-    // tasks pulled from all subjects belonging to logged-in user
     val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
 
     var showAddSheet by remember { mutableStateOf(false) }
 
-    // progress
     val totalTasks = tasks.value.size
     val completedTasks = tasks.value.count { it.isDone }
     val progress = if (totalTasks > 0) completedTasks / totalTasks.toFloat() else 0f
@@ -87,7 +84,6 @@ fun TasksScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
 
-            // ---- Progress Block ----
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -114,7 +110,6 @@ fun TasksScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // ---- Task list ----
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(tasks.value) { task ->
                     Row(
@@ -148,18 +143,22 @@ fun TasksScreen(
                             )
                             Text(
                                 text = task.due.toString(),
-                                color = Color(0xFF4CAF50),
+                                color = Accent,
                                 fontSize = 13.sp,
                                 modifier = Modifier.padding(top = 2.dp),
                                 fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
                             )
                         }
-
                         Checkbox(
                             checked = task.isDone,
                             onCheckedChange = { checked ->
                                 task.isDone = checked
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Accent,
+                                uncheckedColor = Color.Gray,
+                                checkmarkColor = Color.White
+                            )
                         )
                     }
                 }
@@ -167,7 +166,6 @@ fun TasksScreen(
         }
     }
 
-    // ---- Add task modal ----
     if (showAddSheet) {
         AddTaskSheet(
             onDismiss = { showAddSheet = false },
@@ -186,7 +184,6 @@ fun TasksScreen(
                         currentUser.subjects.find { it.name.equals(subject.trim()) }
 
                     if (existingSubject != null) {
-                        // add task to existing subject
                         existingSubject.tasks.add(newTask)
                     } else {
                         // create new subject with this task
