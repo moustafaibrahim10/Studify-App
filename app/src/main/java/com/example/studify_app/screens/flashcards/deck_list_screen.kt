@@ -43,6 +43,7 @@ fun decks_list(
     val decks = remember { derivedStateOf { user.subjects.flatMap { it.decks } } }
 
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var addDeckError by rememberSaveable { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -121,30 +122,35 @@ fun decks_list(
             onDismiss = { isSheetOpen = false },
             onConfirm = { title, subject ->
 
-                if (title.isNotBlank() && subject.isNotBlank()) {
+                val trimmedTitle = title.trim()
+                val trimmedSubject = subject.trim()
+                
 
-                    val newDeck = Deck(
-                        title = title.trim(),
-                        subject = subject.trim(),
-                    )
-                    val existingSubject =
-                        user.subjects.find { it.name.equals(subject.trim(), ignoreCase = true) }
+                val newDeck = Deck(
+                    title = trimmedTitle,
+                    subject = trimmedSubject
+                )
 
-                    if (existingSubject != null) {
-                        existingSubject.decks.add(newDeck)
-                        user.decks.add(newDeck)
-
-                    } else {
-                        val newSubject = Subject(
-                            name = subject.trim(),
-                            decks = mutableListOf(newDeck)
-                        )
-                        user.subjects.add(newSubject)
-                        user.decks.add(newDeck)
-                    }
+                val existingSubject = user.subjects.find {
+                    it.name.equals(trimmedSubject, ignoreCase = true)
                 }
+
+                if (existingSubject != null) {
+                    existingSubject.decks.add(newDeck)
+                    user.decks.add(newDeck)
+                } else {
+                    val newSubject = Subject(
+                        name = trimmedSubject,
+                        decks = mutableListOf(newDeck)
+                    )
+                    user.subjects.add(newSubject)
+                    user.decks.add(newDeck)
+                }
+
+                addDeckError = null
                 isSheetOpen = false
             }
+
 
         )
     }

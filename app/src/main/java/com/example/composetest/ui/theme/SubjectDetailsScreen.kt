@@ -64,6 +64,8 @@ fun SubjectDetailsScreen(
     val doneCount = subject?.tasks?.count { it.isDone } ?: 0
     val total = subject?.tasks?.size ?: 0
     subject?.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
+    val sortedTasks = DataRepository.getSubjectByName(subjectName)?.tasks?.sortedBy { it.due } ?: emptyList()
+
 
     var showAddTaskSheet by remember { mutableStateOf(false) }
     var showAddDeckSheet by remember { mutableStateOf(false) }
@@ -141,7 +143,7 @@ fun SubjectDetailsScreen(
             }
 
             // Tasks List
-            items(subject?.tasks ?: emptyList(), key = { it.title + it.due.toString() }) { task ->
+            items(sortedTasks, key = { it.title + it.due.toString() }) { task ->
                 var showDeleteTaskDialog by remember { mutableStateOf(false) }
 
                 if (showDeleteTaskDialog) {
