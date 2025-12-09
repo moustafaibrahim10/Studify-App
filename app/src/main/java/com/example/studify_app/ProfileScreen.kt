@@ -114,6 +114,12 @@ fun ProfilePic(navController: NavHostController){
             fontSize = 22.sp,
             color = Color(0XFF000000)
         )
+        Text(
+            text = currentUser?.email ?: "",
+            fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+            fontSize = 16.sp,
+            color = Color(0xFF2F7D66)
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 

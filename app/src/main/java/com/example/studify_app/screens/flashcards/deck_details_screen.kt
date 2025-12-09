@@ -2,9 +2,12 @@ package com.example.finalfinalefinal
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +32,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -47,6 +52,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.data.DataRepository
+import com.example.data.DataRepository.currentUser
+import com.example.data.DataRepository.getSubjectByName
+import com.example.model.Deck
+import com.example.model.Flashcard
 import com.example.studify_app.R
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -103,30 +112,59 @@ fun deck_details_screen(
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 150.dp)
+
             ) {
                 items(deck.cards) { card ->
-                    question_form(card.question)
+                    var showDeleteCardDialog by remember { mutableStateOf(false) }
+
+                    if (showDeleteCardDialog) {
+                        DeleteFlashcardDialog(
+                            card = card,
+                            onDismiss = { showDeleteCardDialog = false },
+                            onConfirm = {
+                                deleteFlashcard(deck, card)
+                                showDeleteCardDialog = false
+                            }
+                        )
+                    }
+
+                    FlashcardItem(
+                        card = card,
+                        onLongPress = { showDeleteCardDialog = true }
+                    )
                 }
+
             }
         }
     }
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun question_form(question: String){
+fun FlashcardItem(card: com.example.model.Flashcard, onLongPress: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(10.dp)
-    ){
-        Column {
-            Text(text = question,fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)), fontSize = 16.sp, color = Color(0xFF000000)
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = { },
+                onLongClick = onLongPress
             )
-            Spacer(Modifier.height(4.dp))
+            .padding(10.dp)
+    ) {
+        Column {
+            Text(
+                text = card.question,
+                fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold)),
+                fontSize = 16.sp,
+                color = Color.Black
+            )
         }
     }
-
 }
+
 
 @Composable
 fun startreviewBtn(onstartreviewClick: () -> Unit) {
@@ -245,35 +283,44 @@ fun AddFlashcardSheet(
 }
 
 
-
-
-
-
-fun Questionsdt(): List<String>{
-    return listOf(
-        "Question 1",
-        "Question 2",
-        "Question 3",
-        "Question 4",
-        "Question 5",
-        "Question 6",
-        "Question 7",
-        "Question 8",
-        "Question 9",
-        "Question 10"
+@Composable
+fun DeleteFlashcardDialog(
+    card: com.example.model.Flashcard,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Flashcard?") },
+        text = { Text("This will remove this flashcard from the deck.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = Color.Red)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = Color(0xFF2F7D66))
+            }
+        }
     )
 }
-fun Answersdt(): List<String>{
-    return listOf(
-        "Answer 1",
-        "Answer 2",
-        "Answer 3",
-        "Answer 4",
-        "Answer 5",
-        "Answer 6",
-        "Answer 7",
-        "Answer 8",
-        "Answer 9",
-        "Answer 10",
-    )
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun deleteFlashcard(deck: Deck, card: Flashcard) {
+    val user = currentUser ?: return
+
+    deck.cards.remove(card)
+
+    val subject = getSubjectByName(deck.subject)
+    subject?.decks
+        ?.find { it.title == deck.title }
+        ?.cards
+        ?.remove(card)
+
+    user.decks
+        .find { it.title == deck.title }
+        ?.cards
+        ?.remove(card)
 }

@@ -2,8 +2,10 @@ package com.example.composetest.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,14 +41,20 @@ private val Accent = Color(0xFF2F7D66)
 private val MintButton = Color(0xFF67C090)
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TasksScreen(
     navController: NavHostController
 ) {
     val currentUser = DataRepository.currentUser!!
 
-    val tasks = remember { derivedStateOf { currentUser.subjects.flatMap { it.tasks } } }
+    val tasks = remember {
+        derivedStateOf {
+            currentUser.subjects
+                .flatMap { it.tasks }
+                .sortedBy { it.due }
+        }
+    }
 
     var showAddSheet by remember { mutableStateOf(false) }
 
@@ -112,19 +120,37 @@ fun TasksScreen(
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(tasks.value) { task ->
+                    var showDeleteTaskDialog by remember { mutableStateOf(false) }
+
+                    if (showDeleteTaskDialog) {
+                        DeleteTaskDialog(
+                            task = task,
+                            onDismiss = { showDeleteTaskDialog = false },
+                            onConfirm = {
+                                deleteTaskCompletely(task)
+                                showDeleteTaskDialog = false
+                            }
+                        )
+                    }
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(10.dp))
-                            .padding(12.dp)
-                            .clickable {
-                                val titleEncoded = URLEncoder.encode(task.title, "UTF-8")
-                                val subjectEncoded = URLEncoder.encode(task.subject, "UTF-8")
-                                val dueEncoded = URLEncoder.encode(task.due.toString(), "UTF-8")
-                                navController.navigate(
-                                    "taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded"
-                                )
-                            },
+                            .combinedClickable(
+                                onClick = {
+                                    val titleEncoded = URLEncoder.encode(task.title, "UTF-8")
+                                    val subjectEncoded = URLEncoder.encode(task.subject, "UTF-8")
+                                    val dueEncoded = URLEncoder.encode(task.due.toString(), "UTF-8")
+                                    navController.navigate(
+                                        "taskDetail/$titleEncoded/$subjectEncoded/$dueEncoded"
+                                    )
+                                },
+                                onLongClick = {
+                                    showDeleteTaskDialog = true
+                                }
+                            )
+                            .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -363,3 +389,57 @@ private fun convertMillisToDate(millis: Long): String {
         .toLocalDate()
         .format(formatter)
 }
+
+
+
+@Composable
+fun DeleteTaskDialog(
+    task: Task,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Task?") },
+        text = {
+            Text("This will permanently remove '${task.title}' from this subject and from your total tasks.")
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = Color.Red)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = Color(0xFF2F7D66))
+            }
+        }
+    )
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun deleteTaskCompletely(task: Task) {
+    val user = DataRepository.currentUser ?: return
+
+    val subject = user.subjects.find { it.name == task.subject }
+
+    if (subject != null) {
+        subject.tasks.remove(task)
+    }
+
+    // if (subject?.tasks?.isEmpty() == true) user.subjects.remove(subject)
+
+    if (subject != null) {
+        val done = subject.tasks.count { it.isDone }
+        val total = subject.tasks.size
+        subject.currentprogress = if (total > 0) (done * 100 / total) else 0
+    }
+}
+
+
+
+
+
+
+

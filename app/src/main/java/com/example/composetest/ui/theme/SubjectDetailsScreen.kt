@@ -3,8 +3,10 @@ package com.example.composetest.ui.theme
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,7 +41,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-private val CardTint = Color(0xFFD5E6DF)
+private val CardTint = Color(0xFF67C090)
 private val ScreenBg = Color(0xFFF9F9F9)
 private val Accent = Color(0xFF2F7D66)
 
@@ -72,8 +74,30 @@ fun SubjectDetailsScreen(
                 title = { Text(subjectName, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_bold))) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Outlined.ArrowBack, contentDescription = "Back") } }
             )
-        },
-        containerColor = ScreenBg
+        }
+        ,containerColor = ScreenBg,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Button(
+                    onClick = onStartPomodoro,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = CardTint),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        "Start Pomodoro",
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))
+                    )
+                }
+            }
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp),
@@ -118,6 +142,20 @@ fun SubjectDetailsScreen(
 
             // Tasks List
             items(subject?.tasks ?: emptyList(), key = { it.title + it.due.toString() }) { task ->
+                var showDeleteTaskDialog by remember { mutableStateOf(false) }
+
+                if (showDeleteTaskDialog) {
+                    DeleteTaskDialog(
+                        task = task,
+                        onDismiss = { showDeleteTaskDialog = false },
+                        onConfirm = {
+                            deleteTaskCompletely(subject!!, task)
+                            showDeleteTaskDialog = false
+                        }
+                    )
+                }
+
+
                 TaskRow(
                     task = task,
                     onCheckedChange = { checked ->
@@ -131,7 +169,8 @@ fun SubjectDetailsScreen(
                         navController.navigate(
                             "taskDetail/${task.title}/${subject?.name ?: ""}/${task.due}"
                         )
-                    }
+                    },
+                    onLongPress = { showDeleteTaskDialog = true }
                 )
             }
 
@@ -153,15 +192,20 @@ fun SubjectDetailsScreen(
             }
 
             items(subject?.decks ?: emptyList(), key = { it.title }) { deck ->
-                DeckRow(deck = deck, onClick = {  navController.navigate("deckDetails/${deck.title}")})
-            }
-            item {
-                Button(
-                    onClick = onStartPomodoro,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = CardTint),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Start Pomodoro", color = Color.Black, fontFamily = FontFamily(Font(R.font.plus_jakarta_sans_semibold))) }
+
+                var showDeleteDeckDialog by remember { mutableStateOf(false) }
+
+                if (showDeleteDeckDialog) {
+                    DeleteDeckDialog(
+                        deck = deck,
+                        onDismiss = { showDeleteDeckDialog = false },
+                        onConfirm = {
+                            deleteDeckCompletely(subject!!, deck)
+                            showDeleteDeckDialog = false
+                        }
+                    )
+                }
+                DeckRow(deck = deck, onClick = {  navController.navigate("deckDetails/${deck.title}")}, onLongPress = { showDeleteDeckDialog = true })
             }
         }
     }
@@ -195,10 +239,17 @@ fun SubjectDetailsScreen(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit = {}) {
+private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit = {}, onLongPress: () -> Unit = {}) {
     Surface(color = Color(0xFFF7FBFA), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongPress
+            )
+
     ) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -219,10 +270,13 @@ private fun TaskRow(task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () 
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DeckRow(deck: Deck, onClick: () -> Unit) {
+private fun DeckRow(deck: Deck, onClick: () -> Unit, onLongPress: () -> Unit = {}) {
     Surface(color = Color.White, shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp,
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(onClick = onClick, onLongClick = onLongPress)
     ) {
         Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -449,4 +503,80 @@ fun AddDeckSheet(
         }
     }
 }
+
+
+
+@Composable
+fun DeleteTaskDialog(
+    task: Task,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Task?") },
+        text = { Text("This will remove '${task.title}' from this subject and from your total tasks.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = Color.Red)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color= Accent)
+            }
+        }
+    )
+}
+
+
+
+@Composable
+fun DeleteDeckDialog(
+    deck: Deck,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Deck?") },
+        text = { Text("This will remove '${deck.title}' and all its flashcards.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = Color.Red)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color= Accent)
+            }
+        }
+    )
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun deleteTaskCompletely(subject: com.example.model.Subject, task: Task) {
+    val user = DataRepository.currentUser ?: return
+
+    subject.tasks.remove(task)
+
+    user.tasks.remove(task)
+
+    val doneCount = subject.tasks.count { it.isDone }
+    val total = subject.tasks.size
+    subject.currentprogress = if (total > 0) (doneCount * 100 / total) else 0
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun deleteDeckCompletely(subject: com.example.model.Subject, deck: Deck) {
+    val user = DataRepository.currentUser ?: return
+
+    subject.decks.remove(deck)
+    user.decks.remove(deck)
+}
+
 
