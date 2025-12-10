@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
 
 // Same colors from TasksScreen
 private val ScreenBg = Color(0xFFF9F9F9)
-private val Accent = Color(0xFF2F7D66)
+val Accent = Color(0xFF2F7D66)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

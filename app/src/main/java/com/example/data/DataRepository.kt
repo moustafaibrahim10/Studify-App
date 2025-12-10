@@ -198,4 +198,20 @@ object DataRepository {
         currentUser?.soundEnabled = enabled
     }
 
+
+    fun getStrongAndWeakSubjects(): Pair<List<Subject>, List<Subject>> {
+        val subjects = currentUser?.subjects ?: return Pair(emptyList(), emptyList())
+
+        val sorted = subjects.sortedByDescending { it.currentprogress }
+
+        val strong = sorted.take(2)
+
+        val weak = sorted.takeLast(2).filter { it !in strong }
+
+        return Pair(strong, weak)
+    }
+
+
+
+
 }
