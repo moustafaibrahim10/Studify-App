@@ -24,7 +24,7 @@ import com.example.model.Task
 import com.example.studify_app.R
 
 private val ScreenBg = Color(0xFFF9F9F9)
-private val MintBtn  = Color(0xFF67C090)
+private val MintBtn  = Color(0xFF2F7D66)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.studify_app // تأكد إن السطر ده موجود ومطابق لاسم الباكدج عندك
+package com.example.studify_app
 
 import android.app.Application
 import android.content.Context

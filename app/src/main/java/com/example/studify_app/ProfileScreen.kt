@@ -145,14 +145,14 @@ fun ProfilePic(navController: NavHostController) {
             GoalItem(
                 icon = R.drawable.pomodoroic,
                 title = "Pomodoro",
-                description = "you completed ${currentUser.totalsessions.toInt()} sessions today",
+                description = "You completed ${currentUser.totalsessions.toInt()} sessions today",
                 progress = -1f
             )
 
             GoalItem(
                 icon = R.drawable.assic,
-                title = "Assignments",
-                description = "Finish ${(assignmentsProgress * 100).toInt()}% of the assignments",
+                title = "Tasks",
+                description = "You finish ${(assignmentsProgress * 100).toInt()}% of your tasks",
                 progress = assignmentsProgress
             )
 

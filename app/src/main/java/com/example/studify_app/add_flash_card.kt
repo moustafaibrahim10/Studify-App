@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.example.data.DataRepository
 
-val mintGreen = Color(0xFF66BB6A)
+val mintGreen = Color(0xFF2F7D66)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
