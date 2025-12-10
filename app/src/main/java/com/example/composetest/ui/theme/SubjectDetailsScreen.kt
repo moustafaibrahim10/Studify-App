@@ -179,7 +179,7 @@ fun SubjectDetailsScreen(
             // Decks Header + Add
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp).clickable { navController.navigate(routs.deckList) },
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

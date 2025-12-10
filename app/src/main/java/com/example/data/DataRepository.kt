@@ -117,7 +117,7 @@ object DataRepository {
     }
 
     fun createAccount(email:String,username: String, password: String): Boolean {
-        if (users.any { it.username == username }) return false // Username exists
+        
         val newUser = User(
             username = username,
             password = password,
@@ -138,13 +138,6 @@ object DataRepository {
         currentUser?.subjects?.remove(subject)
     }
 
-    fun addSubjectTask(subject: Subject?, task: Task) {
-        currentUser?.subjects?.find { it == subject }?.tasks?.add(task)
-    }
-
-    fun addSubjectDeck(subject: Subject?, deck: Deck) {
-        currentUser?.subjects?.find { it == subject }?.decks?.add(deck)
-    }
 
 
     fun getSubjectByName(name: String): Subject? {
@@ -197,5 +190,21 @@ object DataRepository {
     fun setSoundEnabled(enabled: Boolean) {
         currentUser?.soundEnabled = enabled
     }
+
+
+    fun getStrongAndWeakSubjects(): Pair<List<Subject>, List<Subject>> {
+        val subjects = currentUser?.subjects ?: return Pair(emptyList(), emptyList())
+
+        val sorted = subjects.sortedByDescending { it.currentprogress }
+
+        val strong = sorted.take(2)
+
+        val weak = sorted.takeLast(2).filter { it !in strong }
+
+        return Pair(strong, weak)
+    }
+
+
+
 
 }

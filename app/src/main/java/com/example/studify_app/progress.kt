@@ -1,5 +1,7 @@
 package com.example.studify_app
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,12 +26,15 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp // مهم للرسم
 import androidx.navigation.NavController
+import com.example.data.DataRepository
 import com.example.finalfinalefinal.routs
+import com.example.model.Subject
 
 // الألوان والمقاييس المستخدمة في التصميم
 val PrimaryMint = Color(0xFF66BB6A)
 val BackgroundPale = Color(0xFFF0FFF0) // لون خلفية خفيف جداً
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressScreen(navController: NavController) {
@@ -78,7 +83,13 @@ fun ProgressScreen(navController: NavController) {
             }
             // 3. تحليل المواد القوية والضعيفة
             item {
-                StrongWeakSubjectsCard()
+                val (strong, weak) = DataRepository.getStrongAndWeakSubjects()
+
+                StrongWeakSubjectsCard(
+                    strongSubjects = strong.map { it.name to it.currentprogress.toFloat() },
+                    weakSubjects  = weak.map { it.name to it.currentprogress.toFloat() }
+                )
+
             }
             // 4. منحنى إتقان بطاقات الفلاش - (هذا هو المكان الذي سيتم فيه التعديل)
             item {
@@ -138,56 +149,81 @@ fun StudyHoursCard(title: String, time: String, isMonthly: Boolean) {
     }
 }
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun StrongWeakSubjectsCard() {
+fun StrongWeakSubjectsCard(
+    strongSubjects: List<Pair<String, Float>>,
+    weakSubjects: List<Pair<String, Float>>
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Strong vs. Weak Subjects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(16.dp))
 
-            SubjectProgress("Math", 0.85f)
-            SubjectProgress("Science", 0.6f)
-            SubjectProgress("History", 0.75f)
-            SubjectProgress("English", 0.5f)
-        }
+        Text("Strong VS Weak Subjects", fontSize = 23.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
+        Spacer(Modifier.height(8.dp))
+            Column(modifier = Modifier.padding(16.dp)) {
+                if (DataRepository.currentUser?.decks?.isEmpty() != true) {
+
+                    Text("Strong Subjects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(8.dp))
+
+                    strongSubjects.forEach { (name, progress) ->
+                        SubjectProgress(name, progress)
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Text("Weak Subjects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(8.dp))
+                    weakSubjects.forEach { (name, progress) ->
+                        SubjectProgress(name, progress)
+                    }
+                } else{
+                    Text("No Subjects Yet", fontSize = 10.sp, color = Color.Gray)
+
+                }
+            }
+
+
     }
 }
 
 @Composable
-fun SubjectProgress(subject: String, strength: Float) {
-    Row(
+fun SubjectProgress(name: String, progress: Float) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 8.dp)
     ) {
-        // اسم المادة
-        Text(subject, modifier = Modifier.width(80.dp), fontSize = 14.sp)
-        Spacer(Modifier.width(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(name, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text("${progress.toInt()}%", fontSize = 12.sp, color = Color.Gray)
+        }
 
-        // شريط التقدم الفعلي
-        Box(
+        Spacer(Modifier.height(6.dp))
+
+        LinearProgressIndicator(
+            progress = progress / 100f,
+            color = PrimaryMint,
+            trackColor = Color(0xFFE8EEF0),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(Color(0xFFE0E0E0)) // خلفية الشريط الرمادية
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(strength) // النسبة المئوية للقوة
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(PrimaryMint) // لون التقدم الأخضر
-            )
-        }
+                .clip(RoundedCornerShape(6.dp))
+        )
     }
 }
+
 
 @Composable
 fun MasteryCurveCard() {
@@ -258,6 +294,7 @@ fun MasteryCurveGraph(data: List<Float>, modifier: Modifier) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewProgressScreen() {
