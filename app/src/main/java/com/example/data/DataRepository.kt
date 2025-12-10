@@ -117,7 +117,7 @@ object DataRepository {
     }
 
     fun createAccount(email:String,username: String, password: String): Boolean {
-        if (users.any { it.username == username }) return false // Username exists
+        
         val newUser = User(
             username = username,
             password = password,
@@ -138,13 +138,6 @@ object DataRepository {
         currentUser?.subjects?.remove(subject)
     }
 
-    fun addSubjectTask(subject: Subject?, task: Task) {
-        currentUser?.subjects?.find { it == subject }?.tasks?.add(task)
-    }
-
-    fun addSubjectDeck(subject: Subject?, deck: Deck) {
-        currentUser?.subjects?.find { it == subject }?.decks?.add(deck)
-    }
 
 
     fun getSubjectByName(name: String): Subject? {

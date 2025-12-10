@@ -1,5 +1,7 @@
 package com.example.studify_app.screens.auth
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.DataRepository
 import com.example.studify_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +51,7 @@ fun RegisterScreen(
     val errorRed = Color(0xFFD32F2F)
     val subtitleColor = Color(0xFF666666)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun validateInput(): Boolean {
         return when {
             name.isBlank() -> {
@@ -64,6 +68,10 @@ fun RegisterScreen(
             }
             !isValidEmail(email) -> {
                 errorMessage = "Please enter a valid email address"
+                false
+            }
+            existingEmail(email) -> {
+                errorMessage = "Email already exists"
                 false
             }
             password.isBlank() -> {
@@ -347,7 +355,15 @@ fun RegisterScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex()
     return emailRegex.matches(email)
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun existingEmail(email: String): Boolean {
+    val existingemail=DataRepository.users.any{ it.email== email }
+    return existingemail
 }
