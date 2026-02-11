@@ -64,32 +64,6 @@
 
 ---
 
-## 🏗 Architecture
-
-com.yourpackage.studify
-│
-├── data
-│   ├── model
-│   └── repository
-│
-├── ui
-│   ├── home
-│   ├── tasks
-│   ├── flashcards
-│   ├── pomodoro
-│   ├── subjects
-│   ├── profile
-│   └── components
-│
-├── navigation
-│
-└── viewmodel
-Architecture Pattern: MVVM
-UI: 100% Jetpack Compose
-State Management: Unidirectional Data Flow
-
----
-
 ## 📱 Screens
 
 * Onboarding
